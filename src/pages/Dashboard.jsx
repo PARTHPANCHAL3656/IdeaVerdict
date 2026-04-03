@@ -130,38 +130,59 @@ Named Competitors: ${formData.named_competitors || "None provided"}
 Team Size: ${formData.team_size}
 Needs External Funding: ${formData.needs_funding}`;
 
-      const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_GEMINI_API_KEY}`
-        },
-        body: JSON.stringify({
-          model: 'gemini-3.0-flash',
-          messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: userMessage }
-          ],
-          response_format: { type: "json_object" }
-        })
-      });
+      const models = [
+        "meta-llama/llama-3.3-70b-instruct:free",
+        "qwen/qwen-2.5-7b-instruct:free",
+        "mistralai/mistral-7b-instruct:free",
+        "google/gemma-3-4b-it:free",
+        "microsoft/phi-3-mini-128k-instruct:free"
+      ];
 
-      if (!response.ok) {
-        throw new Error('API Request failed');
+      let parsedResult = null;
+
+      for (const model of models) {
+        try {
+          const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY}`,
+              'HTTP-Referer': window.location.origin,
+              'X-Title': 'IdeaVerdict'
+            },
+            body: JSON.stringify({
+              model,
+              messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: userMessage }
+              ],
+              response_format: { type: "json_object" }
+            })
+          });
+
+          if (!response.ok) continue;
+
+          const rawData = await response.json();
+          const contentStr = rawData.choices?.[0]?.message?.content;
+          if (!contentStr) continue;
+
+          let cleanedJsonStr = contentStr.trim();
+          if (cleanedJsonStr.startsWith('```json')) cleanedJsonStr = cleanedJsonStr.slice(7);
+          if (cleanedJsonStr.startsWith('```')) cleanedJsonStr = cleanedJsonStr.slice(3);
+          if (cleanedJsonStr.endsWith('```')) cleanedJsonStr = cleanedJsonStr.slice(0, -3);
+          cleanedJsonStr = cleanedJsonStr.trim();
+
+          parsedResult = JSON.parse(cleanedJsonStr);
+          break;
+
+        } catch (modelError) {
+          continue;
+        }
       }
 
-      const rawData = await response.json();
-      const contentStr = rawData.choices[0].message.content;
+      if (!parsedResult) throw new Error('All models failed');
 
-      let cleanedJsonStr = contentStr.trim();
-      if (cleanedJsonStr.startsWith('```json')) cleanedJsonStr = cleanedJsonStr.slice(7);
-      if (cleanedJsonStr.startsWith('```')) cleanedJsonStr = cleanedJsonStr.slice(3);
-      if (cleanedJsonStr.endsWith('```')) cleanedJsonStr = cleanedJsonStr.slice(0, -3);
-      cleanedJsonStr = cleanedJsonStr.trim();
-
-      const parsedResult = JSON.parse(cleanedJsonStr);
       setResult(parsedResult);
-
       setTimeout(() => {
         resultRef.current?.scrollIntoView({ behavior: 'smooth' });
       }, 100);
