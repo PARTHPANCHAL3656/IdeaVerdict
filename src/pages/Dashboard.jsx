@@ -123,7 +123,7 @@ Named Competitors: ${formData.named_competitors || "None provided"}
 Team Size: ${formData.team_size}
 Needs External Funding: ${formData.needs_funding}`;
 
-      const response = await fetch('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', {
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
