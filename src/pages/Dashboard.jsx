@@ -130,14 +130,14 @@ Named Competitors: ${formData.named_competitors || "None provided"}
 Team Size: ${formData.team_size}
 Needs External Funding: ${formData.needs_funding}`;
 
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${import.meta.env.VITE_GEMINI_API_KEY}`
         },
         body: JSON.stringify({
-          model: 'gemini-2.0-flash',
+          model: 'gemini-3.0-flash',
           messages: [
             { role: 'system', content: systemPrompt },
             { role: 'user', content: userMessage }
