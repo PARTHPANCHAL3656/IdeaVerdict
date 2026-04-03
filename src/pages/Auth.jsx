@@ -43,7 +43,7 @@ export default function Auth() {
       <div className="w-full max-w-sm space-y-8 bg-slate-900 p-8 rounded-lg border border-slate-800 shadow-xl">
         <div className="text-center">
           <h2 className="text-3xl font-bold tracking-tight text-white">
-            {isSignUp ? 'Create your account' : 'Sign in to IdeaVerdict'}
+            {isSignUp ? 'Create your account' : 'Log in to IdeaVerdict'}
           </h2>
           <p className="mt-2 text-sm text-slate-400">
             {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
@@ -51,7 +51,7 @@ export default function Auth() {
               onClick={() => setIsSignUp(!isSignUp)}
               className="font-medium text-slate-100 hover:text-slate-300 underline"
             >
-              {isSignUp ? 'Sign in' : 'Sign up'}
+              {isSignUp ? 'Log in' : 'Sign up'}
             </button>
           </p>
         </div>
@@ -77,7 +77,7 @@ export default function Auth() {
             </div>
             <div>
               <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-slate-300">
-                Password
+                {isSignUp ? 'Set Password' : 'Password'}
               </label>
               <input
                 type="password"
@@ -94,7 +94,7 @@ export default function Auth() {
             disabled={loading}
             className="inline-flex w-full items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-medium text-slate-950 transition-colors hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-400 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? 'Processing...' : isSignUp ? 'Sign up' : 'Sign in'}
+            {loading ? 'Processing...' : isSignUp ? 'Sign up' : 'Log in'}
           </button>
         </form>
       </div>
