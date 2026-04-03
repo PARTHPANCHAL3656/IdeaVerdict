@@ -31,39 +31,33 @@ Called from Dashboard.jsx with the user's auth token for secure access.
 **Frontend (.env.local)**:
 - `VITE_SUPABASE_URL` - Supabase project URL
 - `VITE_SUPABASE_ANON_KEY` - Supabase anonymous key
+- `VITE_GEMINI_API_KEY` - Google AI Studio API key (used client-side in Phase 2)
 
-**Supabase Secrets** (deploy settings):
+**Supabase Secrets** (for Phase 3 Edge Function):
 - `GEMINI_API_KEY` - Google AI Studio API key
 
-## What's Wired
+## What's Wired (Phase 1 + Phase 2)
 
 - Authentication flow (signup/signin) with profile creation
-- Phase 2 Core Flow: Idea submission form inside Dashboard.jsx with 9 fields
-- Phase 2 Core Flow: Direct client-side Gemini 2.0 Flash API call with IVSM scoring rules
-- Phase 2 Core Flow: Results display with color-coded verdict and score breakdowns
+- Intake form inside Dashboard.jsx with 9 fields + inline validation
+- Direct client-side Gemini 2.0 Flash API call with IVSM v1.1 scoring
+- Results display: verdict badge, score breakdown bars, failure reasons, validate-first box, confidence meter + pills
+- "Analyse Another Idea" reset flow
 
 ## What's TODO (Phase 3)
 
-- Move AI analysis to Supabase Edge Function
+- Move AI analysis to Supabase Edge Function (move API key server-side)
 - Database saving to 'analyses' table
 - Analysis history with expandable cards
 - Row Level Security on analyses table
 - Analysis deletion
 - Share/export results
-
 - Email verification flow
-- Analysis deletion
-- Share/export results
 - User settings/profile page
-- Real-time collaboration features
 - Rate limiting on Edge Function
-- Input validation improvements
 
 ## Next Session Starting Point
 
-1. Run `npm install` then `npm run dev` to verify frontend
-2. Deploy Edge Function: `supabase functions deploy analyze`
-3. Set GEMINI_API_KEY secret in Supabase
-4. Run schema.sql in Supabase SQL Editor
-5. Fill .env.local with actual Supabase credentials
-6. Test full flow: signup → submit idea → view result → check history
+1. Run `npm run dev` to verify frontend
+2. Test full flow: signup → submit idea → view AI result → reset
+3. Begin Phase 3: Edge Function, DB persistence, history page
