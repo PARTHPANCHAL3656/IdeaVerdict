@@ -162,7 +162,7 @@ function Hero() {
 
       {/* CTA */}
       <Link
-        to="/dashboard"
+        to="/auth"
         className="inline-flex items-center gap-2 px-7 py-4 rounded-xl text-base font-bold transition-all duration-200"
         style={{
           background: TEAL,
@@ -377,7 +377,7 @@ function CTAStrip() {
           Free to use. No pitch decks. No jargon. Just the truth.
         </p>
         <Link
-          to="/dashboard"
+          to="/auth"
           className="inline-flex items-center gap-2 px-8 py-4 rounded-xl text-base font-bold transition-all duration-200"
           style={{
             background: TEAL,
