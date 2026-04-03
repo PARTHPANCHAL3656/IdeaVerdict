@@ -9,6 +9,9 @@ export default function Dashboard() {
   const [formData, setFormData] = useState({
     idea_title: '',
     idea_description: '',
+    problem_statement: '',
+    domain_expertise: '',
+    technical_skills: '',
     target_user: '',
     india_market_context: '',
     expects_revenue: 'day_1',
@@ -17,7 +20,7 @@ export default function Dashboard() {
     team_size: 'Solo',
     needs_funding: false
   })
-  
+
   const [errors, setErrors] = useState({})
   const [isLoading, setIsLoading] = useState(false)
   const [result, setResult] = useState(null)
@@ -47,6 +50,7 @@ export default function Dashboard() {
 
     if (!formData.idea_title.trim()) newErrors.idea_title = "Title is required";
     if (!formData.idea_description.trim()) newErrors.idea_description = "Description is required";
+    if (!formData.problem_statement.trim()) newErrors.problem_statement = "Problem statement is required";
     if (!formData.target_user.trim()) newErrors.target_user = "Target user is required";
     if (formData.knows_competitors && !formData.named_competitors.trim()) {
       newErrors.named_competitors = "Please name your competitors";
@@ -115,6 +119,9 @@ You do not use live web search. You reason from training data only.
 
       const userMessage = `Idea Title: ${formData.idea_title}
 Description: ${formData.idea_description}
+Problem Statement: ${formData.problem_statement || "Not provided"}
+Domain Expertise: ${formData.domain_expertise || "Not provided"}
+Technical Skills: ${formData.technical_skills || "Not provided"}
 Target User: ${formData.target_user}
 India Market Context: ${formData.india_market_context || "Not provided"}
 Expected First Revenue: ${formData.expects_revenue}
@@ -123,38 +130,48 @@ Named Competitors: ${formData.named_competitors || "None provided"}
 Team Size: ${formData.team_size}
 Needs External Funding: ${formData.needs_funding}`;
 
-      const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_GEMINI_API_KEY}`
-        },
-        body: JSON.stringify({
-          model: 'gemini-3.0-flash',
-          messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: userMessage }
-          ],
-          response_format: { type: "json_object" }
-        })
-      });
+      let parsedResult = null;
 
-      if (!response.ok) {
-        throw new Error('API Request failed');
-      }
+      try {
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`
+          },
+          body: JSON.stringify({
+            model: 'llama-3.3-70b-versatile',
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: userMessage }
+            ],
+            response_format: { type: "json_object" }
+          })
+        });
 
-      const rawData = await response.json();
-      const contentStr = rawData.choices[0].message.content;
-      
-      let cleanedJsonStr = contentStr.trim();
-      if (cleanedJsonStr.startsWith('```json')) cleanedJsonStr = cleanedJsonStr.slice(7);
-      if (cleanedJsonStr.startsWith('```')) cleanedJsonStr = cleanedJsonStr.slice(3);
-      if (cleanedJsonStr.endsWith('```')) cleanedJsonStr = cleanedJsonStr.slice(0, -3);
-      cleanedJsonStr = cleanedJsonStr.trim();
-      
-      const parsedResult = JSON.parse(cleanedJsonStr);
+        if (!response.ok) {
+          const errText = await response.text();
+          throw new Error(`Groq API Error: ${response.status} - ${errText}`);
+        }
+
+        const rawData = await response.json();
+        const contentStr = rawData.choices?.[0]?.message?.content;
+
+          let cleanedJsonStr = contentStr.trim();
+          if (cleanedJsonStr.startsWith('\`\`\`json')) cleanedJsonStr = cleanedJsonStr.slice(7);
+          if (cleanedJsonStr.startsWith('\`\`\`')) cleanedJsonStr = cleanedJsonStr.slice(3);
+          if (cleanedJsonStr.endsWith('\`\`\`')) cleanedJsonStr = cleanedJsonStr.slice(0, -3);
+          cleanedJsonStr = cleanedJsonStr.trim();
+
+          parsedResult = JSON.parse(cleanedJsonStr);
+        } catch (apiError) {
+          console.error("Groq API error:", apiError);
+          throw apiError;
+        }
+
+      if (!parsedResult) throw new Error('All models failed');
+
       setResult(parsedResult);
-      
       setTimeout(() => {
         resultRef.current?.scrollIntoView({ behavior: 'smooth' });
       }, 100);
@@ -208,7 +225,7 @@ Needs External Funding: ${formData.needs_funding}`;
           Logout
         </button>
       </header>
-      
+
       <main className="flex flex-col items-center flex-1 space-y-6 mt-8">
         <div className="text-center">
           <h2 className="text-4xl font-extrabold tracking-tight text-slate-100">
@@ -221,17 +238,17 @@ Needs External Funding: ${formData.needs_funding}`;
 
         <div className="w-full max-w-2xl text-left bg-slate-900 border border-slate-800 rounded-xl p-8 shadow-xl mt-6">
           <div className="space-y-6">
-            
+
             {/* 1. idea_title */}
             <div>
               <label className="block text-sm font-medium mb-1.5 text-slate-300">Idea Title *</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 name="idea_title"
                 value={formData.idea_title}
                 onChange={handleChange}
                 placeholder="e.g. AI-powered HR onboarding for Indian SMBs"
-                className="flex h-10 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-transparent text-white"
+                className="flex h-10 w-full rounded-md border border-slate-600 bg-slate-800 px-3 py-2 text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-white"
               />
               {errors.idea_title && <p className="mt-1 text-sm text-red-500">{errors.idea_title}</p>}
             </div>
@@ -239,41 +256,81 @@ Needs External Funding: ${formData.needs_funding}`;
             {/* 2. idea_description */}
             <div>
               <label className="block text-sm font-medium mb-1.5 text-slate-300">Describe your idea *</label>
-              <textarea 
+              <textarea
                 name="idea_description"
                 value={formData.idea_description}
                 onChange={handleChange}
                 rows={3}
                 placeholder="What does it do, who is it for, and how does it work?"
-                className="flex w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-transparent min-h-[80px] text-white"
+                className="flex w-full rounded-md border border-slate-600 bg-slate-800 px-3 py-2 text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent min-h-[80px] text-white"
               />
               {errors.idea_description && <p className="mt-1 text-sm text-red-500">{errors.idea_description}</p>}
+            </div>
+
+            {/* Field A: problem_statement */}
+            <div>
+              <label className="block text-sm font-medium mb-1.5 text-slate-300">What is the core problem? *</label>
+              <textarea
+                name="problem_statement"
+                value={formData.problem_statement}
+                onChange={handleChange}
+                rows={2}
+                placeholder="e.g. Doctors lose 30+ mins daily to manual OPD records. Wait times avg 45 mins."
+                className="flex w-full rounded-md border border-slate-600 bg-slate-800 px-3 py-2 text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent min-h-[64px] text-white"
+              />
+              {errors.problem_statement && <p className="mt-1 text-sm text-red-500">{errors.problem_statement}</p>}
+            </div>
+
+            {/* Field B: domain_expertise */}
+            <div>
+              <label className="block text-sm font-medium mb-1.5 text-slate-300">Your Domain Expertise <span className="text-slate-500 font-normal">(optional)</span></label>
+              <input
+                type="text"
+                name="domain_expertise"
+                value={formData.domain_expertise}
+                onChange={handleChange}
+                placeholder="e.g. 1 year working at a private hospital in Ahmedabad"
+                className="flex h-10 w-full rounded-md border border-slate-600 bg-slate-800 px-3 py-2 text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-white"
+              />
+            </div>
+
+            {/* Field C: technical_skills */}
+            <div>
+              <label className="block text-sm font-medium mb-1.5 text-slate-300">Technical Skills <span className="text-slate-500 font-normal">(optional)</span></label>
+              <input
+                type="text"
+                name="technical_skills"
+                value={formData.technical_skills}
+                onChange={handleChange}
+                placeholder="e.g. Can code, has built 2 side projects"
+                className="flex h-10 w-full rounded-md border border-slate-600 bg-slate-800 px-3 py-2 text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-white"
+              />
             </div>
 
             {/* 3. target_user */}
             <div>
               <label className="block text-sm font-medium mb-1.5 text-slate-300">Target User *</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 name="target_user"
                 value={formData.target_user}
                 onChange={handleChange}
                 placeholder="e.g. HR managers at 50–500 employee companies"
-                className="flex h-10 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-transparent text-white"
+                className="flex h-10 w-full rounded-md border border-slate-600 bg-slate-800 px-3 py-2 text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-white"
               />
               {errors.target_user && <p className="mt-1 text-sm text-red-500">{errors.target_user}</p>}
             </div>
 
             {/* 4. india_market_context */}
             <div>
-              <label className="block text-sm font-medium mb-1.5 text-slate-300">India Market Context (optional)</label>
-              <textarea 
+              <label className="block text-sm font-medium mb-1.5 text-slate-300">India Market Context <span className="text-slate-500 font-normal">(optional)</span></label>
+              <textarea
                 name="india_market_context"
                 value={formData.india_market_context}
                 onChange={handleChange}
                 rows={2}
                 placeholder="Pricing, regulations, distribution, local behaviour"
-                className="flex w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-transparent text-white"
+                className="flex w-full rounded-md border border-slate-600 bg-slate-800 px-3 py-2 text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-white"
               />
             </div>
 
@@ -287,11 +344,11 @@ Needs External Funding: ${formData.needs_funding}`;
             {/* 5. expects_revenue */}
             <div>
               <label className="block text-sm font-medium mb-1.5 text-slate-300">When do you expect first revenue? *</label>
-              <select 
+              <select
                 name="expects_revenue"
                 value={formData.expects_revenue}
                 onChange={handleChange}
-                className="flex h-10 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-transparent text-white"
+                className="flex h-10 w-full rounded-md border border-slate-600 bg-slate-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-white"
               >
                 <option value="day_1">Day 1 (transactional)</option>
                 <option value="3_6mo">3–6 months</option>
@@ -302,7 +359,7 @@ Needs External Funding: ${formData.needs_funding}`;
 
             {/* 6. knows_competitors boolean toggle */}
             <div className="flex items-center pt-2">
-              <input 
+              <input
                 type="checkbox"
                 id="knows_competitors"
                 name="knows_competitors"
@@ -314,17 +371,17 @@ Needs External Funding: ${formData.needs_funding}`;
                 Do you know your direct competitors?
               </label>
             </div>
-            
+
             {formData.knows_competitors && (
               <div className="pl-6 pt-1">
                 <label className="block text-sm font-medium mb-1.5 text-slate-400">Name your competitors</label>
-                <textarea 
+                <textarea
                   name="named_competitors"
                   value={formData.named_competitors}
                   onChange={handleChange}
                   rows={2}
                   placeholder="e.g. Keka, Darwinbox, Zoho People"
-                  className="flex w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-transparent text-white"
+                  className="flex w-full rounded-md border border-slate-600 bg-slate-800 px-3 py-2 text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-white"
                 />
                 {errors.named_competitors && <p className="mt-1 text-sm text-red-500">{errors.named_competitors}</p>}
               </div>
@@ -333,11 +390,11 @@ Needs External Funding: ${formData.needs_funding}`;
             {/* 7. team_size */}
             <div>
               <label className="block text-sm font-medium mb-1.5 text-slate-300">Team Size *</label>
-              <select 
+              <select
                 name="team_size"
                 value={formData.team_size}
                 onChange={handleChange}
-                className="flex h-10 w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-transparent text-white"
+                className="flex h-10 w-full rounded-md border border-slate-600 bg-slate-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-white"
               >
                 <option value="Solo">Solo</option>
                 <option value="2">2</option>
@@ -348,7 +405,7 @@ Needs External Funding: ${formData.needs_funding}`;
 
             {/* 8. needs_funding boolean toggle */}
             <div className="flex items-center pt-2 pb-4">
-              <input 
+              <input
                 type="checkbox"
                 id="needs_funding"
                 name="needs_funding"
@@ -367,7 +424,7 @@ Needs External Funding: ${formData.needs_funding}`;
                 {apiError}
               </div>
             )}
-            
+
             {/* Submit button */}
             <button
               onClick={handleSubmit}
@@ -392,7 +449,7 @@ Needs External Funding: ${formData.needs_funding}`;
         {/* RESULTS SECTION */}
         {result && (
           <div ref={resultRef} className="w-full max-w-2xl text-left bg-slate-900 border border-slate-800 rounded-xl p-8 shadow-xl mt-8 space-y-10">
-            
+
             {/* VERDICT BADGE */}
             <div className={`flex flex-col items-center justify-center p-8 border rounded-xl ${getVerdictStyle(result.verdict)}`}>
               <span className="uppercase text-sm tracking-widest font-bold opacity-80 mb-2">Verdict</span>
@@ -453,7 +510,7 @@ Needs External Funding: ${formData.needs_funding}`;
                   <div className={`h-2 rounded-full ${result.confidence >= 70 ? 'bg-green-500' : result.confidence >= 40 ? 'bg-amber-500' : 'bg-red-500'}`} style={{ width: `${result.confidence}%` }}></div>
                 </div>
               </div>
-              
+
               <div className="flex flex-wrap gap-2">
                 {Object.entries(result.confidence_breakdown || {}).map(([key, isTrue]) => (
                   <span key={key} className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${isTrue ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-slate-800 text-slate-500 border-slate-700'}`}>
@@ -479,4 +536,3 @@ Needs External Funding: ${formData.needs_funding}`;
     </div>
   )
 }
-
