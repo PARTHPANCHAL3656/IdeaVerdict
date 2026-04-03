@@ -133,29 +133,33 @@ Needs External Funding: ${formData.needs_funding}`;
       let parsedResult = null;
 
       try {
-        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        const response = await fetch('https://api.anthropic.com/v1/messages', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`
+            'x-api-key': import.meta.env.VITE_ANTHROPIC_API_KEY,
+            'anthropic-version': '2023-06-01',
+            'anthropic-dangerous-direct-browser-access': 'true'
           },
           body: JSON.stringify({
-            model: 'llama-3.3-70b-versatile',
+            model: 'claude-3-haiku-20240307',
+            max_tokens: 1500,
+            system: systemPrompt,
             messages: [
-              { role: 'system', content: systemPrompt },
               { role: 'user', content: userMessage }
-            ],
-            response_format: { type: "json_object" }
+            ]
           })
         });
 
         if (!response.ok) {
           const errText = await response.text();
-          throw new Error(`Groq API Error: ${response.status} - ${errText}`);
+          throw new Error(`Anthropic API Error: ${response.status} - ${errText}`);
         }
 
         const rawData = await response.json();
-        const contentStr = rawData.choices?.[0]?.message?.content;
+        const contentStr = rawData.content?.[0]?.text;
+
+        if (contentStr) {
 
           let cleanedJsonStr = contentStr.trim();
           if (cleanedJsonStr.startsWith('\`\`\`json')) cleanedJsonStr = cleanedJsonStr.slice(7);
@@ -164,10 +168,11 @@ Needs External Funding: ${formData.needs_funding}`;
           cleanedJsonStr = cleanedJsonStr.trim();
 
           parsedResult = JSON.parse(cleanedJsonStr);
-        } catch (apiError) {
-          console.error("Groq API error:", apiError);
-          throw apiError;
         }
+      } catch (apiError) {
+        console.error("Anthropic API error:", apiError);
+        throw apiError;
+      }
 
       if (!parsedResult) throw new Error('All models failed');
 
