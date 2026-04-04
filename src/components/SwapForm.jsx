@@ -2,16 +2,16 @@ import { AnimatePresence, motion } from "framer-motion";
 import { FaGoogle, FaApple } from "react-icons/fa";
 
 const DEFAULT_TEXTS = {
-  signInTitle: "Sign In",
+  signInTitle: "Log In",
   signUpTitle: "Create Account",
   signInSubtitle: "Hey friend, welcome back!",
   signUpSubtitle: "Just one more step to get started!",
-  signInButton: "Sign In",
+  signInButton: "Log In",
   signUpButton: "Create Account",
   footerSignIn: "Don't have an account?",
   footerSignUp: "Already have an account?",
   footerSignInCta: "Create Account",
-  footerSignUpCta: "Sign In",
+  footerSignUpCta: "Log In",
 };
 
 export default function SwapForm({
