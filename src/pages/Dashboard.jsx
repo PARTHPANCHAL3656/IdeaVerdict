@@ -24,8 +24,6 @@ export default function Dashboard() {
   const [errors, setErrors] = useState({})
   const [isLoading, setIsLoading] = useState(false)
   const [apiError, setApiError] = useState(null)
-  const [activeSection, setActiveSection] = useState('idea')
-
   const handleLogout = async () => {
     await supabase.auth.signOut()
     navigate('/auth')
@@ -250,46 +248,17 @@ Needs External Funding: ${formData.needs_funding}`;
         <div className="relative">
           <div className="absolute inset-0 bg-gradient-to-r from-cyan-600/10 to-blue-600/10 rounded-2xl blur-xl"></div>
           <div className="relative bg-slate-900/60 backdrop-blur border border-slate-800/50 rounded-2xl p-8 lg:p-12">
-            {/* Progress Indicator */}
-            <div className="flex gap-2 mb-12">
-              {[
-                { id: 'idea', label: 'Your Idea', icon: Lightbulb },
-                { id: 'market', label: 'Market Details', icon: Target },
-                { id: 'competitive', label: 'Competitive', icon: TrendingUp },
-                { id: 'team', label: 'Team & Funding', icon: Users }
-              ].map((section, idx) => {
-                const SectionIcon = section.icon
-                return (
-                  <button
-                    key={section.id}
-                    onClick={() => setActiveSection(section.id)}
-                    className={`flex-1 py-3 rounded-lg text-sm font-medium transition-all ${
-                      activeSection === section.id
-                        ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg'
-                        : 'bg-slate-800/40 text-slate-400 hover:bg-slate-700/40'
-                    }`}
-                  >
-                    <div className="flex items-center justify-center gap-2">
-                      <SectionIcon size={16} />
-                      <span className="hidden sm:inline">{section.label}</span>
-                    </div>
-                  </button>
-                )
-              })}
-            </div>
-
             <form onSubmit={handleSubmit} className="space-y-8">
-            {/* SECTION 1: Your Idea */}
-            {(activeSection === 'idea' || true) && (
+              {/* Section Header */}
+              <div className="text-center mb-8">
+                <h3 className="text-2xl font-semibold text-white mb-2 flex items-center justify-center gap-2">
+                  <Lightbulb size={24} className="text-cyan-400" />
+                  Your Idea
+                </h3>
+                <p className="text-base text-slate-400">Tell us what you're building</p>
+              </div>
+              {/* SECTION 1: Your Idea */}
               <div className="space-y-6">
-                <div>
-                  <h3 className="text-lg font-semibold text-white mb-1 flex items-center gap-2">
-                    <Lightbulb size={20} className="text-cyan-400" />
-                    Your Idea
-                  </h3>
-                  <p className="text-sm text-slate-400">Tell us what you're building</p>
-                </div>
-
                 {/* Idea Title */}
                 <div>
                   <label className="block text-sm font-semibold mb-2 text-slate-200">
@@ -382,9 +351,8 @@ Needs External Funding: ${formData.needs_funding}`;
                   </div>
                 </div>
               </div>
-            )}
 
-            {/* Divider */}
+              {/* Divider */}
             <div className="h-px bg-gradient-to-r from-transparent via-slate-700/50 to-transparent"></div>
 
             {/* SECTION 2: Market Details */}
@@ -592,3 +560,4 @@ Needs External Funding: ${formData.needs_funding}`;
     </div>
   )
 }
+
