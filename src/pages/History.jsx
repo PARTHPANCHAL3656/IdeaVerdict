@@ -94,6 +94,30 @@ export default function History() {
             ${item.result.one_thing_to_validate_first}
           </div>
         ` : ''}
+
+        ${item.result.timing_note ? `
+          <h3 style="font-size: 18px; font-weight: bold; color: #0f172a; margin-bottom: 10px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">Market Timing Note</h3>
+          <p style="color: #475569; margin-bottom: 30px; font-style: italic;">${item.result.timing_note}</p>
+        ` : ''}
+
+        ${item.result.similar_products_in_market && item.result.similar_products_in_market.length > 0 ? `
+          <h3 style="font-size: 18px; font-weight: bold; color: #0f172a; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">What Already Exists in This Market</h3>
+          <ul style="color: #475569; margin-bottom: 30px; padding-left: 20px;">
+            ${item.result.similar_products_in_market.map(p => {
+              const [name, ...rest] = p.split(' — ')
+              return `<li style="margin-bottom: 8px;"><strong>${name}</strong>${rest.length ? ' — ' + rest.join(' — ') : ''}</li>`
+            }).join('')}
+          </ul>
+        ` : ''}
+
+        ${item.result.action_plan && item.result.action_plan.length > 0 ? `
+          <h3 style="font-size: 18px; font-weight: bold; color: #0f172a; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">Your 5-Step Action Plan</h3>
+          <ol style="color: #475569; margin-bottom: 30px; padding-left: 20px;">
+            ${item.result.action_plan.map(s => 
+              `<li style="margin-bottom: 12px;"><strong>${s.title}</strong><br/>${s.detail}</li>`
+            ).join('')}
+          </ol>
+        ` : ''}
       </div>
     `;
 
