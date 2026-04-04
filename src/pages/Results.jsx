@@ -157,21 +157,21 @@ export default function Results() {
   const result = analysis.result;
 
   return (
-    <div className="flex min-h-screen flex-col p-6 bg-slate-950 text-white pb-24">
-      <header className="flex items-center justify-between py-4 border-b border-slate-800">
-        <h1 className="text-2xl font-bold tracking-tight text-white">
-          <Link to="/dashboard">IdeaVerdict</Link>
+    <div className="flex min-h-screen flex-col p-6 bg-slate-950 dark:bg-white text-white dark:text-slate-900 pb-24 transition-colors">
+      <header className="flex items-center justify-between py-4 border-b border-slate-800 dark:border-slate-200 transition-colors">
+        <h1 className="text-2xl font-bold tracking-tight text-white dark:text-slate-900 transition-colors">
+          <Link to="/" className="hover:opacity-80 transition-opacity">IdeaVerdict</Link>
         </h1>
         <div className="flex items-center gap-6">
-          <Link to="/dashboard" className="text-sm font-medium text-slate-400 hover:text-slate-100 transition-colors">
+          <Link to="/dashboard" className="text-sm font-medium text-slate-400 dark:text-slate-600 hover:text-slate-100 dark:hover:text-slate-900 transition-colors">
             Analyze
           </Link>
-          <Link to="/history" className="text-sm font-medium text-slate-400 hover:text-slate-100 transition-colors">
+          <Link to="/history" className="text-sm font-medium text-slate-400 dark:text-slate-600 hover:text-slate-100 dark:hover:text-slate-900 transition-colors">
             Library
           </Link>
           <button
             onClick={handleLogout}
-            className="text-sm font-medium text-slate-400 hover:text-slate-100 transition-colors"
+            className="text-sm font-medium text-slate-400 dark:text-slate-600 hover:text-slate-100 dark:hover:text-slate-900 transition-colors"
           >
             Logout
           </button>
