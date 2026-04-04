@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import html2pdf from 'html2pdf.js'
+import { Lightbulb, Library, Download, ArrowRight, AlertCircle } from 'lucide-react'
 
 export default function History() {
   const navigate = useNavigate()
@@ -117,90 +118,159 @@ export default function History() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col p-6 bg-slate-950 text-white pb-24">
-      <header className="flex items-center justify-between py-4 border-b border-slate-800">
-        <h1 className="text-2xl font-bold tracking-tight text-white">
-          <Link to="/dashboard">IdeaVerdict</Link>
-        </h1>
-        <div className="flex items-center gap-6">
-          <Link to="/dashboard" className="text-sm font-medium text-slate-400 hover:text-slate-100 transition-colors">
-            Analyze
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white">
+      {/* Header */}
+      <header className="sticky top-0 z-50 border-b border-slate-800/50 bg-slate-950/80 backdrop-blur-xl">
+        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+          <Link to="/dashboard" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center">
+              <Lightbulb size={24} className="text-white" />
+            </div>
+            <h1 className="text-2xl font-bold tracking-tight">IdeaVerdict</h1>
           </Link>
-          <span className="text-sm font-medium text-slate-100">
-            Library
-          </span>
-          <button
-            onClick={handleLogout}
-            className="text-sm font-medium text-slate-400 hover:text-slate-100 transition-colors"
-          >
-            Logout
-          </button>
+          <nav className="flex items-center gap-8">
+            <Link to="/dashboard" className="text-sm font-medium text-slate-400 hover:text-slate-200 transition-colors hover:underline">
+              Analyze
+            </Link>
+            <span className="text-sm font-medium text-cyan-400">Library</span>
+            <button
+              onClick={handleLogout}
+              className="text-sm font-medium px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 transition-colors text-slate-300"
+            >
+              Logout
+            </button>
+          </nav>
         </div>
       </header>
 
-      <main className="flex flex-col items-center flex-1 space-y-6 mt-8 w-full max-w-4xl mx-auto">
-        <div className="text-center mb-6">
-          <h2 className="text-3xl font-extrabold tracking-tight text-slate-100">
-            Your Library
+      <main className="max-w-6xl mx-auto px-6 py-12">
+        {/* Hero Section */}
+        <div className="mb-12 text-center">
+          <div className="inline-block mb-4 px-3 py-1 rounded-full bg-purple-950/50 border border-purple-700/50">
+            <span className="text-xs font-semibold text-purple-300 flex items-center gap-2">
+              <Library size={14} /> Your Analysis Library
+            </span>
+          </div>
+          <h2 className="text-5xl font-bold tracking-tight mb-4 bg-gradient-to-r from-slate-100 to-slate-400 bg-clip-text text-transparent">
+            Your Ideas
           </h2>
-          <p className="text-slate-400 mt-2">
-             Past ideas you have analyzed with IVSM.
+          <p className="text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed">
+            Review all your past startup idea analyses. Track your verdicts, scores, and insights from IVSM.
           </p>
         </div>
 
+        {/* Content */}
+
         {loading ? (
-          <p className="animate-pulse text-lg text-slate-400">Loading library...</p>
+          <div className="flex justify-center items-center py-20">
+            <div className="space-y-4 text-center">
+              <div className="flex justify-center mb-4">
+                <svg className="animate-spin h-10 w-10 text-cyan-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              </div>
+              <p className="text-slate-400 font-medium">Loading your library...</p>
+            </div>
+          </div>
         ) : error ? (
-          <div className="p-4 bg-red-950/50 border border-red-500/50 rounded-lg text-red-400">
-            {error}
+          <div className="relative">
+            <div className="absolute inset-0 bg-red-600/10 rounded-2xl blur-xl"></div>
+            <div className="relative bg-red-950/40 backdrop-blur border border-red-800/50 rounded-2xl p-8 flex items-start gap-4">
+              <AlertCircle size={24} className="text-red-400 flex-shrink-0 mt-1" />
+              <div>
+                <h3 className="font-semibold text-red-300 mb-1">Error Loading Library</h3>
+                <p className="text-red-300/80 text-sm">{error}</p>
+              </div>
+            </div>
           </div>
         ) : analyses.length === 0 ? (
-          <div className="text-center p-12 bg-slate-900 border border-slate-800 rounded-xl w-full">
-            <h3 className="text-xl font-bold text-slate-300 mb-2">No analyses yet</h3>
-            <p className="text-slate-500 mb-6">Start by analyzing your first startup idea.</p>
-            <Link to="/dashboard" className="inline-flex items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-bold text-slate-950 transition-colors hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-400">
-              Go to Dashboard
-            </Link>
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-600/10 to-blue-600/10 rounded-2xl blur-xl"></div>
+            <div className="relative bg-slate-900/60 backdrop-blur border border-slate-800/50 rounded-2xl p-12 text-center">
+              <div className="w-16 h-16 rounded-full bg-slate-800/50 flex items-center justify-center mx-auto mb-6">
+                <Library size={32} className="text-slate-600" />
+              </div>
+              <h3 className="text-2xl font-bold text-slate-200 mb-2">No Analyses Yet</h3>
+              <p className="text-slate-400 mb-8">Start by analyzing your first startup idea to build your library of insights.</p>
+              <Link to="/dashboard" className="inline-flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 px-6 py-3 text-base font-semibold text-white transition-all hover:shadow-lg hover:shadow-cyan-500/30">
+                Start Analyzing
+                <ArrowRight size={18} />
+              </Link>
+            </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+          <div className="space-y-4 w-full">
             {analyses.map((item) => (
               <Link 
                 to={`/results/${item.id}`} 
                 key={item.id}
-                className="flex flex-col p-6 bg-slate-900 border border-slate-800 rounded-xl hover:border-slate-600 transition-colors group"
+                className="group relative block"
               >
-                <div className="flex justify-between items-start mb-4">
-                  <span className={`px-2.5 py-1 rounded-full text-xs font-semibold border ${getVerdictBadge(item.verdict)}`}>
-                    {item.verdict}
-                  </span>
-                  <span className="text-slate-500 text-xs font-medium">
-                    {new Date(item.scored_at).toLocaleDateString()}
-                  </span>
-                </div>
-                <h3 className="text-lg font-bold text-slate-200 group-hover:text-white mb-2 line-clamp-2">
-                  {item.idea_title}
-                </h3>
-                <div className="mt-auto pt-4 flex items-center justify-between text-sm">
-                  <span className="text-slate-400">Score: <span className="font-mono text-white">{item.total_score}</span> / 60</span>
-                  <div className="flex items-center gap-3">
-                    <button 
-                      onClick={(e) => handleDownloadPDF(e, item)}
-                      className="text-slate-400 hover:text-white flex items-center gap-1 text-xs bg-slate-800 hover:bg-slate-700 px-2 py-1 rounded transition-colors"
-                      title="Download PDF"
-                    >
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                      PDF
-                    </button>
-                    <span className="text-indigo-400 group-hover:text-indigo-300 font-medium flex items-center gap-1">
-                      View Details <span aria-hidden="true">&rarr;</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-cyan-600/5 to-blue-600/5 rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div className="relative bg-slate-900/60 backdrop-blur border border-slate-800/50 rounded-xl p-6 hover:border-slate-700/50 transition-all">
+                  {/* Header */}
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center gap-4 flex-1">
+                      <span className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${getVerdictBadge(item.verdict)} whitespace-nowrap`}>
+                        {item.verdict}
+                      </span>
+                      <h3 className="text-lg font-bold text-slate-100 group-hover:text-white transition-colors line-clamp-1">
+                        {item.idea_title}
+                      </h3>
+                    </div>
+                    <span className="text-xs text-slate-500 font-medium whitespace-nowrap ml-4">
+                      {new Date(item.scored_at).toLocaleDateString('en-US', { 
+                        month: 'short', 
+                        day: 'numeric', 
+                        year: 'numeric' 
+                      })}
                     </span>
+                  </div>
+
+                  {/* Score and Actions */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-8">
+                      {/* Score */}
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-2xl font-bold text-cyan-400">{item.total_score}</span>
+                        <span className="text-sm text-slate-500">/ 60</span>
+                      </div>
+
+                      {/* Score Bar */}
+                      <div className="flex-1">
+                        <div className="w-40 h-2 bg-slate-800/50 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full transition-all"
+                            style={{ width: `${(item.total_score / 60) * 100}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="flex items-center gap-3 ml-4">
+                      <button 
+                        onClick={(e) => handleDownloadPDF(e, item)}
+                        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800/50 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-medium transition-all hover:shadow-lg"
+                        title="Download PDF Report"
+                      >
+                        <Download size={16} />
+                        <span className="hidden sm:inline">PDF</span>
+                      </button>
+                      <ArrowRight size={18} className="text-slate-500 group-hover:text-cyan-400 transition-colors" />
+                    </div>
                   </div>
                 </div>
               </Link>
             ))}
           </div>
         )}
+
+        {/* Footer */}
+        <div className="mt-16 text-center text-sm text-slate-500 pb-8 pt-8 border-t border-slate-800/30">
+          <p>Powered by IVSM (Idea Viability Scoring Model)</p>
+        </div>
       </main>
     </div>
   )
