@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import html2pdf from 'html2pdf.js'
 import { Lightbulb, Library, Download, ArrowRight, AlertCircle } from 'lucide-react'
+import { SwitchMode } from '../components/SwitchMode'
 
 export default function History() {
   const navigate = useNavigate()
@@ -118,9 +119,9 @@ export default function History() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 dark:from-slate-50 dark:via-white dark:to-slate-50 text-white dark:text-slate-900 transition-colors">
       {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-slate-800/50 bg-slate-950/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-50 border-b border-slate-800/50 dark:border-slate-200/30 bg-slate-950/80 dark:bg-white/80 backdrop-blur-xl transition-colors">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link to="/dashboard" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center">
@@ -129,13 +130,14 @@ export default function History() {
             <h1 className="text-2xl font-bold tracking-tight">IdeaVerdict</h1>
           </Link>
           <nav className="flex items-center gap-8">
-            <Link to="/dashboard" className="text-sm font-medium text-slate-400 hover:text-slate-200 transition-colors hover:underline">
+            <Link to="/dashboard" className="text-sm font-medium text-slate-400 dark:text-slate-600 hover:text-slate-200 dark:hover:text-slate-900 transition-colors hover:underline">
               Analyze
             </Link>
-            <span className="text-sm font-medium text-cyan-400">Library</span>
+            <span className="text-sm font-medium text-cyan-400 dark:text-cyan-600">Library</span>
+            <SwitchMode />
             <button
               onClick={handleLogout}
-              className="text-sm font-medium px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 transition-colors text-slate-300"
+              className="text-sm font-medium px-4 py-2 rounded-lg bg-slate-800 dark:bg-slate-200 hover:bg-slate-700 dark:hover:bg-slate-300 transition-colors text-slate-300 dark:text-slate-900"
             >
               Logout
             </button>
@@ -146,15 +148,15 @@ export default function History() {
       <main className="max-w-6xl mx-auto px-6 py-12">
         {/* Hero Section */}
         <div className="mb-12 text-center">
-          <div className="inline-block mb-4 px-3 py-1 rounded-full bg-purple-950/50 border border-purple-700/50">
-            <span className="text-xs font-semibold text-purple-300 flex items-center gap-2">
+          <div className="inline-block mb-4 px-3 py-1 rounded-full bg-purple-950/50 dark:bg-purple-100 border border-purple-700/50 dark:border-purple-300">
+            <span className="text-xs font-semibold text-purple-300 dark:text-purple-700 flex items-center gap-2 transition-colors">
               <Library size={14} /> Your Analysis Library
             </span>
           </div>
-          <h2 className="text-5xl font-bold tracking-tight mb-4 bg-gradient-to-r from-slate-100 to-slate-400 bg-clip-text text-transparent">
+          <h2 className="text-5xl font-bold tracking-tight mb-4 bg-gradient-to-r from-slate-100 dark:from-slate-950 to-slate-400 dark:to-slate-700 bg-clip-text text-transparent">
             Your Ideas
           </h2>
-          <p className="text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-lg text-slate-400 dark:text-slate-600 max-w-2xl mx-auto leading-relaxed transition-colors">
             Review all your past startup idea analyses. Track your verdicts, scores, and insights from IVSM.
           </p>
         </div>
@@ -170,30 +172,30 @@ export default function History() {
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
               </div>
-              <p className="text-slate-400 font-medium">Loading your library...</p>
+              <p className="text-slate-400 dark:text-slate-600 font-medium transition-colors">Loading your library...</p>
             </div>
           </div>
         ) : error ? (
           <div className="relative">
-            <div className="absolute inset-0 bg-red-600/10 rounded-2xl blur-xl"></div>
-            <div className="relative bg-red-950/40 backdrop-blur border border-red-800/50 rounded-2xl p-8 flex items-start gap-4">
-              <AlertCircle size={24} className="text-red-400 flex-shrink-0 mt-1" />
+            <div className="absolute inset-0 bg-red-600/10 dark:bg-red-600/5 rounded-2xl blur-xl transition-colors"></div>
+            <div className="relative bg-red-950/40 dark:bg-red-100/60 backdrop-blur border border-red-800/50 dark:border-red-300/50 rounded-2xl p-8 flex items-start gap-4 transition-colors">
+              <AlertCircle size={24} className="text-red-400 dark:text-red-600 flex-shrink-0 mt-1 transition-colors" />
               <div>
-                <h3 className="font-semibold text-red-300 mb-1">Error Loading Library</h3>
-                <p className="text-red-300/80 text-sm">{error}</p>
+                <h3 className="font-semibold text-red-300 dark:text-red-700 mb-1 transition-colors">Error Loading Library</h3>
+                <p className="text-red-300/80 dark:text-red-600/80 text-sm transition-colors">{error}</p>
               </div>
             </div>
           </div>
         ) : analyses.length === 0 ? (
           <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-cyan-600/10 to-blue-600/10 rounded-2xl blur-xl"></div>
-            <div className="relative bg-slate-900/60 backdrop-blur border border-slate-800/50 rounded-2xl p-12 text-center">
-              <div className="w-16 h-16 rounded-full bg-slate-800/50 flex items-center justify-center mx-auto mb-6">
-                <Library size={32} className="text-slate-600" />
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-600/10 dark:from-cyan-600/5 to-blue-600/10 dark:to-blue-600/5 rounded-2xl blur-xl transition-colors"></div>
+            <div className="relative bg-slate-900/60 dark:bg-slate-100/60 backdrop-blur border border-slate-800/50 dark:border-slate-200/30 rounded-2xl p-12 text-center transition-colors">
+              <div className="w-16 h-16 rounded-full bg-slate-800/50 dark:bg-slate-200/50 flex items-center justify-center mx-auto mb-6 transition-colors">
+                <Library size={32} className="text-slate-600 dark:text-slate-400 transition-colors" />
               </div>
-              <h3 className="text-2xl font-bold text-slate-200 mb-2">No Analyses Yet</h3>
-              <p className="text-slate-400 mb-8">Start by analyzing your first startup idea to build your library of insights.</p>
-              <Link to="/dashboard" className="inline-flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 px-6 py-3 text-base font-semibold text-white transition-all hover:shadow-lg hover:shadow-cyan-500/30">
+              <h3 className="text-2xl font-bold text-slate-200 dark:text-slate-900 mb-2 transition-colors">No Analyses Yet</h3>
+              <p className="text-slate-400 dark:text-slate-600 mb-8 transition-colors">Start by analyzing your first startup idea to build your library of insights.</p>
+              <Link to="/dashboard" className="inline-flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 px-6 py-3 text-base font-semibold text-white transition-all hover:shadow-lg hover:shadow-cyan-500/30 dark:shadow-cyan-500/20">
                 Start Analyzing
                 <ArrowRight size={18} />
               </Link>
@@ -207,19 +209,19 @@ export default function History() {
                 key={item.id}
                 className="group relative block"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-cyan-600/5 to-blue-600/5 rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <div className="relative bg-slate-900/60 backdrop-blur border border-slate-800/50 rounded-xl p-6 hover:border-slate-700/50 transition-all">
+                <div className="absolute inset-0 bg-gradient-to-r from-cyan-600/5 dark:from-cyan-600/3 to-blue-600/5 dark:to-blue-600/3 rounded-xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div className="relative bg-slate-900/60 dark:bg-slate-100/60 backdrop-blur border border-slate-800/50 dark:border-slate-200/30 rounded-xl p-6 hover:border-slate-700/50 dark:hover:border-slate-200/50 transition-all">
                   {/* Header */}
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-4 flex-1">
                       <span className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${getVerdictBadge(item.verdict)} whitespace-nowrap`}>
                         {item.verdict}
                       </span>
-                      <h3 className="text-lg font-bold text-slate-100 group-hover:text-white transition-colors line-clamp-1">
+                      <h3 className="text-lg font-bold text-slate-100 dark:text-slate-900 group-hover:text-white dark:group-hover:text-slate-800 transition-colors line-clamp-1">
                         {item.idea_title}
                       </h3>
                     </div>
-                    <span className="text-xs text-slate-500 font-medium whitespace-nowrap ml-4">
+                    <span className="text-xs text-slate-500 dark:text-slate-400 font-medium whitespace-nowrap ml-4 transition-colors">
                       {new Date(item.scored_at).toLocaleDateString('en-US', { 
                         month: 'short', 
                         day: 'numeric', 
@@ -234,12 +236,12 @@ export default function History() {
                       {/* Score */}
                       <div className="flex items-baseline gap-2">
                         <span className="text-2xl font-bold text-cyan-400">{item.total_score}</span>
-                        <span className="text-sm text-slate-500">/ 60</span>
+                        <span className="text-sm text-slate-500 dark:text-slate-400 transition-colors">/ 60</span>
                       </div>
 
                       {/* Score Bar */}
                       <div className="flex-1">
-                        <div className="w-40 h-2 bg-slate-800/50 rounded-full overflow-hidden">
+                        <div className="w-40 h-2 bg-slate-800/50 dark:bg-slate-300/50 rounded-full overflow-hidden transition-colors">
                           <div 
                             className="h-full bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full transition-all"
                             style={{ width: `${(item.total_score / 60) * 100}%` }}
@@ -252,13 +254,13 @@ export default function History() {
                     <div className="flex items-center gap-3 ml-4">
                       <button 
                         onClick={(e) => handleDownloadPDF(e, item)}
-                        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800/50 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-medium transition-all hover:shadow-lg"
+                        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-slate-800/50 dark:bg-slate-200/50 hover:bg-slate-700 dark:hover:bg-slate-300 text-slate-300 dark:text-slate-900 hover:text-white dark:hover:text-slate-950 text-xs font-medium transition-all hover:shadow-lg dark:shadow-slate-400/10"
                         title="Download PDF Report"
                       >
                         <Download size={16} />
                         <span className="hidden sm:inline">PDF</span>
                       </button>
-                      <ArrowRight size={18} className="text-slate-500 group-hover:text-cyan-400 transition-colors" />
+                      <ArrowRight size={18} className="text-slate-500 dark:text-slate-400 group-hover:text-cyan-400 dark:group-hover:text-cyan-600 transition-colors" />
                     </div>
                   </div>
                 </div>
@@ -268,10 +270,11 @@ export default function History() {
         )}
 
         {/* Footer */}
-        <div className="mt-16 text-center text-sm text-slate-500 pb-8 pt-8 border-t border-slate-800/30">
+        <div className="mt-16 text-center text-sm text-slate-500 dark:text-slate-400 pb-8 pt-8 border-t border-slate-800/30 dark:border-slate-200/30 transition-colors">
           <p>Powered by IVSM (Idea Viability Scoring Model)</p>
         </div>
       </main>
     </div>
   )
 }
+
