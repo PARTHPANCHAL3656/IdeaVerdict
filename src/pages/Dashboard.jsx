@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { Lightbulb, Target, TrendingUp, Users, AlertCircle, CheckCircle } from 'lucide-react'
 
 export default function Dashboard() {
   const navigate = useNavigate()
@@ -23,6 +24,7 @@ export default function Dashboard() {
   const [errors, setErrors] = useState({})
   const [isLoading, setIsLoading] = useState(false)
   const [apiError, setApiError] = useState(null)
+  const [activeSection, setActiveSection] = useState('idea')
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -205,242 +207,389 @@ Needs External Funding: ${formData.needs_funding}`;
   };
 
   return (
-    <div className="flex min-h-screen flex-col p-6 bg-slate-950 text-white pb-24">
-      <header className="flex items-center justify-between py-4 border-b border-slate-800">
-        <h1 className="text-2xl font-bold tracking-tight text-white">IdeaVerdict</h1>
-        <div className="flex items-center gap-6">
-          <Link to="/history" className="text-sm font-medium text-slate-400 hover:text-slate-100 transition-colors">
-            Library
-          </Link>
-          <button
-            onClick={handleLogout}
-            className="text-sm font-medium text-slate-400 hover:text-slate-100 transition-colors"
-          >
-            Logout
-          </button>
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white">
+      {/* Header */}
+      <header className="sticky top-0 z-50 border-b border-slate-800/50 bg-slate-950/80 backdrop-blur-xl">
+        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center">
+              <Lightbulb size={24} className="text-white" />
+            </div>
+            <h1 className="text-2xl font-bold tracking-tight">IdeaVerdict</h1>
+          </div>
+          <nav className="flex items-center gap-8">
+            <Link to="/history" className="text-sm font-medium text-slate-400 hover:text-slate-200 transition-colors hover:underline">
+              Library
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="text-sm font-medium px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 transition-colors text-slate-300"
+            >
+              Logout
+            </button>
+          </nav>
         </div>
       </header>
 
-      <main className="flex flex-col items-center flex-1 space-y-6 mt-8">
-        <div className="text-center">
-          <h2 className="text-4xl font-extrabold tracking-tight text-slate-100">
-            Analyse Your Idea
+      {/* Main Content */}
+      <main className="max-w-6xl mx-auto px-6 py-12">
+        {/* Hero Section */}
+        <div className="mb-12 text-center">
+          <div className="inline-block mb-4 px-3 py-1 rounded-full bg-cyan-950/50 border border-cyan-700/50">
+            <span className="text-xs font-semibold text-cyan-300">Startup Evaluation</span>
+          </div>
+          <h2 className="text-5xl font-bold tracking-tight mb-4 bg-gradient-to-r from-slate-100 to-slate-400 bg-clip-text text-transparent">
+            Validate Your Idea
           </h2>
-          <p className="text-slate-400 max-w-lg mt-2 mx-auto">
-            Ready to put your vision to the test? Start a new analysis and see if it's a Build It, Pivot It, Drop It, or a Sleeper Hit.
+          <p className="text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed">
+            Get brutally honest AI-powered feedback on your startup idea. Discover if it's a <span className="text-cyan-400">Build It</span>, <span className="text-yellow-400">Pivot It</span>, <span className="text-orange-400">Drop It</span>, or a <span className="text-green-400">Sleeper Hit</span>.
           </p>
         </div>
 
-        <div className="w-full max-w-2xl text-left bg-slate-900 border border-slate-800 rounded-xl p-8 shadow-xl mt-6">
-          <div className="space-y-6">
-
-            {/* 1. idea_title */}
-            <div>
-              <label className="block text-sm font-medium mb-1.5 text-slate-300">Idea Title *</label>
-              <input
-                type="text"
-                name="idea_title"
-                value={formData.idea_title}
-                onChange={handleChange}
-                placeholder="e.g. AI-powered HR onboarding for Indian SMBs"
-                className="flex h-10 w-full rounded-md border border-slate-600 bg-slate-800 px-3 py-2 text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-white"
-              />
-              {errors.idea_title && <p className="mt-1 text-sm text-red-500">{errors.idea_title}</p>}
+        {/* Form Container */}
+        <div className="relative">
+          <div className="absolute inset-0 bg-gradient-to-r from-cyan-600/10 to-blue-600/10 rounded-2xl blur-xl"></div>
+          <div className="relative bg-slate-900/60 backdrop-blur border border-slate-800/50 rounded-2xl p-8 lg:p-12">
+            {/* Progress Indicator */}
+            <div className="flex gap-2 mb-12">
+              {[
+                { id: 'idea', label: 'Your Idea', icon: Lightbulb },
+                { id: 'market', label: 'Market Details', icon: Target },
+                { id: 'competitive', label: 'Competitive', icon: TrendingUp },
+                { id: 'team', label: 'Team & Funding', icon: Users }
+              ].map((section, idx) => {
+                const SectionIcon = section.icon
+                return (
+                  <button
+                    key={section.id}
+                    onClick={() => setActiveSection(section.id)}
+                    className={`flex-1 py-3 rounded-lg text-sm font-medium transition-all ${
+                      activeSection === section.id
+                        ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-lg'
+                        : 'bg-slate-800/40 text-slate-400 hover:bg-slate-700/40'
+                    }`}
+                  >
+                    <div className="flex items-center justify-center gap-2">
+                      <SectionIcon size={16} />
+                      <span className="hidden sm:inline">{section.label}</span>
+                    </div>
+                  </button>
+                )
+              })}
             </div>
 
-            {/* 2. idea_description */}
-            <div>
-              <label className="block text-sm font-medium mb-1.5 text-slate-300">Describe your idea *</label>
-              <textarea
-                name="idea_description"
-                value={formData.idea_description}
-                onChange={handleChange}
-                rows={3}
-                placeholder="What does it do, who is it for, and how does it work?"
-                className="flex w-full rounded-md border border-slate-600 bg-slate-800 px-3 py-2 text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent min-h-[80px] text-white"
-              />
-              {errors.idea_description && <p className="mt-1 text-sm text-red-500">{errors.idea_description}</p>}
-            </div>
+            <form onSubmit={handleSubmit} className="space-y-8">
+            {/* SECTION 1: Your Idea */}
+            {(activeSection === 'idea' || true) && (
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-1 flex items-center gap-2">
+                    <Lightbulb size={20} className="text-cyan-400" />
+                    Your Idea
+                  </h3>
+                  <p className="text-sm text-slate-400">Tell us what you're building</p>
+                </div>
 
-            {/* Field A: problem_statement */}
-            <div>
-              <label className="block text-sm font-medium mb-1.5 text-slate-300">What is the core problem? *</label>
-              <textarea
-                name="problem_statement"
-                value={formData.problem_statement}
-                onChange={handleChange}
-                rows={2}
-                placeholder="e.g. Doctors lose 30+ mins daily to manual OPD records. Wait times avg 45 mins."
-                className="flex w-full rounded-md border border-slate-600 bg-slate-800 px-3 py-2 text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent min-h-[64px] text-white"
-              />
-              {errors.problem_statement && <p className="mt-1 text-sm text-red-500">{errors.problem_statement}</p>}
-            </div>
+                {/* Idea Title */}
+                <div>
+                  <label className="block text-sm font-semibold mb-2 text-slate-200">
+                    Idea Title <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="idea_title"
+                    value={formData.idea_title}
+                    onChange={handleChange}
+                    placeholder="e.g. AI-powered HR onboarding for Indian SMBs"
+                    className="w-full px-4 py-3 rounded-lg border border-slate-700/50 bg-slate-800/50 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all"
+                  />
+                  {errors.idea_title && (
+                    <p className="mt-2 text-sm text-red-400 flex items-center gap-1">
+                      <AlertCircle size={14} /> {errors.idea_title}
+                    </p>
+                  )}
+                </div>
 
-            {/* Field B: domain_expertise */}
-            <div>
-              <label className="block text-sm font-medium mb-1.5 text-slate-300">Your Domain Expertise <span className="text-slate-500 font-normal">(optional)</span></label>
-              <input
-                type="text"
-                name="domain_expertise"
-                value={formData.domain_expertise}
-                onChange={handleChange}
-                placeholder="e.g. 1 year working at a private hospital in Ahmedabad"
-                className="flex h-10 w-full rounded-md border border-slate-600 bg-slate-800 px-3 py-2 text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-white"
-              />
-            </div>
+                {/* Idea Description */}
+                <div>
+                  <label className="block text-sm font-semibold mb-2 text-slate-200">
+                    What's your idea? <span className="text-red-400">*</span>
+                  </label>
+                  <textarea
+                    name="idea_description"
+                    value={formData.idea_description}
+                    onChange={handleChange}
+                    rows={4}
+                    placeholder="What does it do, who is it for, and how does it work?"
+                    className="w-full px-4 py-3 rounded-lg border border-slate-700/50 bg-slate-800/50 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all resize-none"
+                  />
+                  {errors.idea_description && (
+                    <p className="mt-2 text-sm text-red-400 flex items-center gap-1">
+                      <AlertCircle size={14} /> {errors.idea_description}
+                    </p>
+                  )}
+                </div>
 
-            {/* Field C: technical_skills */}
-            <div>
-              <label className="block text-sm font-medium mb-1.5 text-slate-300">Technical Skills <span className="text-slate-500 font-normal">(optional)</span></label>
-              <input
-                type="text"
-                name="technical_skills"
-                value={formData.technical_skills}
-                onChange={handleChange}
-                placeholder="e.g. Can code, has built 2 side projects"
-                className="flex h-10 w-full rounded-md border border-slate-600 bg-slate-800 px-3 py-2 text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-white"
-              />
-            </div>
+                {/* Problem Statement */}
+                <div>
+                  <label className="block text-sm font-semibold mb-2 text-slate-200">
+                    What's the core problem? <span className="text-red-400">*</span>
+                  </label>
+                  <textarea
+                    name="problem_statement"
+                    value={formData.problem_statement}
+                    onChange={handleChange}
+                    rows={3}
+                    placeholder="e.g. Doctors lose 30+ mins daily to manual OPD records. Wait times avg 45 mins."
+                    className="w-full px-4 py-3 rounded-lg border border-slate-700/50 bg-slate-800/50 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all resize-none"
+                  />
+                  {errors.problem_statement && (
+                    <p className="mt-2 text-sm text-red-400 flex items-center gap-1">
+                      <AlertCircle size={14} /> {errors.problem_statement}
+                    </p>
+                  )}
+                </div>
 
-            {/* 3. target_user */}
-            <div>
-              <label className="block text-sm font-medium mb-1.5 text-slate-300">Target User *</label>
-              <input
-                type="text"
-                name="target_user"
-                value={formData.target_user}
-                onChange={handleChange}
-                placeholder="e.g. HR managers at 50–500 employee companies"
-                className="flex h-10 w-full rounded-md border border-slate-600 bg-slate-800 px-3 py-2 text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-white"
-              />
-              {errors.target_user && <p className="mt-1 text-sm text-red-500">{errors.target_user}</p>}
-            </div>
+                {/* Expertise Section */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
+                  <div>
+                    <label className="block text-sm font-semibold mb-2 text-slate-200">
+                      Your Domain Expertise
+                      <span className="text-slate-500 font-normal text-xs ml-1">(optional)</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="domain_expertise"
+                      value={formData.domain_expertise}
+                      onChange={handleChange}
+                      placeholder="e.g. 1 year at a hospital"
+                      className="w-full px-4 py-3 rounded-lg border border-slate-700/50 bg-slate-800/50 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold mb-2 text-slate-200">
+                      Technical Skills
+                      <span className="text-slate-500 font-normal text-xs ml-1">(optional)</span>
+                    </label>
+                    <input
+                      type="text"
+                      name="technical_skills"
+                      value={formData.technical_skills}
+                      onChange={handleChange}
+                      placeholder="e.g. Can code, built 2 projects"
+                      className="w-full px-4 py-3 rounded-lg border border-slate-700/50 bg-slate-800/50 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
 
-            {/* 4. india_market_context */}
-            <div>
-              <label className="block text-sm font-medium mb-1.5 text-slate-300">India Market Context <span className="text-slate-500 font-normal">(optional)</span></label>
-              <textarea
-                name="india_market_context"
-                value={formData.india_market_context}
-                onChange={handleChange}
-                rows={2}
-                placeholder="Pricing, regulations, distribution, local behaviour"
-                className="flex w-full rounded-md border border-slate-600 bg-slate-800 px-3 py-2 text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-white"
-              />
-            </div>
+            {/* Divider */}
+            <div className="h-px bg-gradient-to-r from-transparent via-slate-700/50 to-transparent"></div>
 
-            {/* visual divider: "Market & Team" */}
-            <div className="flex items-center pt-4 pb-2">
-              <div className="flex-grow border-t border-slate-800"></div>
-              <span className="shrink-0 px-4 text-sm font-semibold text-slate-500 uppercase tracking-widest">Market & Team</span>
-              <div className="flex-grow border-t border-slate-800"></div>
-            </div>
+            {/* SECTION 2: Market Details */}
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-1 flex items-center gap-2">
+                  <Target size={20} className="text-cyan-400" />
+                  Market Details
+                </h3>
+                <p className="text-sm text-slate-400">Who you're building for and why</p>
+              </div>
 
-            {/* 5. expects_revenue */}
-            <div>
-              <label className="block text-sm font-medium mb-1.5 text-slate-300">When do you expect first revenue? *</label>
-              <select
-                name="expects_revenue"
-                value={formData.expects_revenue}
-                onChange={handleChange}
-                className="flex h-10 w-full rounded-md border border-slate-600 bg-slate-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-white"
-              >
-                <option value="day_1">Day 1 (transactional)</option>
-                <option value="3_6mo">3–6 months</option>
-                <option value="6_12mo">6–12 months</option>
-                <option value="12mo_plus">12+ months / VC path</option>
-              </select>
-            </div>
-
-            {/* 6. knows_competitors boolean toggle */}
-            <div className="flex items-center pt-2">
-              <input
-                type="checkbox"
-                id="knows_competitors"
-                name="knows_competitors"
-                checked={formData.knows_competitors}
-                onChange={handleChange}
-                className="h-4 w-4 rounded border-slate-700 bg-slate-950 text-indigo-500 focus:ring-indigo-500"
-              />
-              <label htmlFor="knows_competitors" className="ml-2 block text-sm font-medium text-slate-300 cursor-pointer">
-                Do you know your direct competitors?
-              </label>
-            </div>
-
-            {formData.knows_competitors && (
-              <div className="pl-6 pt-1">
-                <label className="block text-sm font-medium mb-1.5 text-slate-400">Name your competitors</label>
-                <textarea
-                  name="named_competitors"
-                  value={formData.named_competitors}
+              {/* Target User */}
+              <div>
+                <label className="block text-sm font-semibold mb-2 text-slate-200">
+                  Target User Profile <span className="text-red-400">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="target_user"
+                  value={formData.target_user}
                   onChange={handleChange}
-                  rows={2}
-                  placeholder="e.g. Keka, Darwinbox, Zoho People"
-                  className="flex w-full rounded-md border border-slate-600 bg-slate-800 px-3 py-2 text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-white"
+                  placeholder="e.g. HR managers at 50–500 employee companies"
+                  className="w-full px-4 py-3 rounded-lg border border-slate-700/50 bg-slate-800/50 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all"
                 />
-                {errors.named_competitors && <p className="mt-1 text-sm text-red-500">{errors.named_competitors}</p>}
+                {errors.target_user && (
+                  <p className="mt-2 text-sm text-red-400 flex items-center gap-1">
+                    <AlertCircle size={14} /> {errors.target_user}
+                  </p>
+                )}
               </div>
-            )}
 
-            {/* 7. team_size */}
-            <div>
-              <label className="block text-sm font-medium mb-1.5 text-slate-300">Team Size *</label>
-              <select
-                name="team_size"
-                value={formData.team_size}
-                onChange={handleChange}
-                className="flex h-10 w-full rounded-md border border-slate-600 bg-slate-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent text-white"
-              >
-                <option value="Solo">Solo</option>
-                <option value="2">2</option>
-                <option value="3–5">3–5</option>
-                <option value="6+">6+</option>
-              </select>
+              {/* India Market Context */}
+              <div>
+                <label className="block text-sm font-semibold mb-2 text-slate-200">
+                  India Market Context
+                  <span className="text-slate-500 font-normal text-xs ml-1">(optional)</span>
+                </label>
+                <textarea
+                  name="india_market_context"
+                  value={formData.india_market_context}
+                  onChange={handleChange}
+                  rows={3}
+                  placeholder="Pricing, regulations, distribution, local behavior..."
+                  className="w-full px-4 py-3 rounded-lg border border-slate-700/50 bg-slate-800/50 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all resize-none"
+                />
+              </div>
+
+              {/* Revenue Timeline */}
+              <div>
+                <label className="block text-sm font-semibold mb-2 text-slate-200">
+                  When do you expect first revenue? <span className="text-red-400">*</span>
+                </label>
+                <select
+                  name="expects_revenue"
+                  value={formData.expects_revenue}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 rounded-lg border border-slate-700/50 bg-slate-800/50 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all"
+                >
+                  <option value="day_1">Day 1 (transactional)</option>
+                  <option value="3_6mo">3–6 months</option>
+                  <option value="6_12mo">6–12 months</option>
+                  <option value="12mo_plus">12+ months / VC path</option>
+                </select>
+              </div>
             </div>
 
-            {/* 8. needs_funding boolean toggle */}
-            <div className="flex items-center pt-2 pb-4">
-              <input
-                type="checkbox"
-                id="needs_funding"
-                name="needs_funding"
-                checked={formData.needs_funding}
-                onChange={handleChange}
-                className="h-4 w-4 rounded border-slate-700 bg-slate-950 text-indigo-500 focus:ring-indigo-500"
-              />
-              <label htmlFor="needs_funding" className="ml-2 block text-sm font-medium text-slate-300 cursor-pointer">
-                Do you need external funding to launch?
-              </label>
-            </div>
+            {/* Divider */}
+            <div className="h-px bg-gradient-to-r from-transparent via-slate-700/50 to-transparent"></div>
 
-            {/* apiError display */}
-            {apiError && (
-              <div className="p-3 text-sm text-red-500 bg-red-950/50 rounded-md border border-red-500/50">
-                {apiError}
+            {/* SECTION 3: Competitive Landscape */}
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-1 flex items-center gap-2">
+                  <TrendingUp size={20} className="text-cyan-400" />
+                  Your Competitive Edge
+                </h3>
+                <p className="text-sm text-slate-400">What sets you apart?</p>
               </div>
-            )}
 
-            {/* Submit button */}
-            <button
-              onClick={handleSubmit}
-              disabled={isLoading}
-              className="w-full flex items-center justify-center rounded-md bg-white px-4 py-3 text-sm font-bold text-slate-950 transition-colors hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-slate-400 disabled:opacity-70 disabled:cursor-not-allowed"
-            >
-              {isLoading ? (
-                <span className="flex items-center gap-2">
-                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-slate-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Analysing...
-                </span>
-              ) : (
-                "Analyse My Idea →"
+              {/* Competitors Checkbox */}
+              <div className="flex items-center p-4 rounded-lg bg-slate-800/30 border border-slate-700/30 hover:border-slate-700/50 transition-colors cursor-pointer" onClick={() => setFormData(prev => ({ ...prev, knows_competitors: !prev.knows_competitors }))}>
+                <input
+                  type="checkbox"
+                  id="knows_competitors"
+                  name="knows_competitors"
+                  checked={formData.knows_competitors}
+                  onChange={handleChange}
+                  className="w-5 h-5 rounded border-slate-600 bg-slate-700 text-cyan-500 focus:ring-cyan-500 cursor-pointer"
+                />
+                <label htmlFor="knows_competitors" className="ml-3 block font-medium text-slate-200 cursor-pointer flex-1">
+                  I know my direct competitors
+                </label>
+              </div>
+
+              {formData.knows_competitors && (
+                <div className="pl-4">
+                  <label className="block text-sm font-semibold mb-2 text-slate-200">
+                    Name your competitors
+                  </label>
+                  <textarea
+                    name="named_competitors"
+                    value={formData.named_competitors}
+                    onChange={handleChange}
+                    rows={2}
+                    placeholder="e.g. Keka, Darwinbox, Zoho People"
+                    className="w-full px-4 py-3 rounded-lg border border-slate-700/50 bg-slate-800/50 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all resize-none"
+                  />
+                  {errors.named_competitors && (
+                    <p className="mt-2 text-sm text-red-400 flex items-center gap-1">
+                      <AlertCircle size={14} /> {errors.named_competitors}
+                    </p>
+                  )}
+                </div>
               )}
-            </button>
+            </div>
+
+            {/* Divider */}
+            <div className="h-px bg-gradient-to-r from-transparent via-slate-700/50 to-transparent"></div>
+
+            {/* SECTION 4: Team & Funding */}
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-lg font-semibold text-white mb-1 flex items-center gap-2">
+                  <Users size={20} className="text-cyan-400" />
+                  Team & Resources
+                </h3>
+                <p className="text-sm text-slate-400">Who's building this and what's needed</p>
+              </div>
+
+              {/* Team Size */}
+              <div>
+                <label className="block text-sm font-semibold mb-2 text-slate-200">
+                  Team Size <span className="text-red-400">*</span>
+                </label>
+                <select
+                  name="team_size"
+                  value={formData.team_size}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 rounded-lg border border-slate-700/50 bg-slate-800/50 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all"
+                >
+                  <option value="Solo">Solo</option>
+                  <option value="2">2</option>
+                  <option value="3–5">3–5</option>
+                  <option value="6+">6+</option>
+                </select>
+              </div>
+
+              {/* Funding Checkbox */}
+              <div className="flex items-center p-4 rounded-lg bg-slate-800/30 border border-slate-700/30 hover:border-slate-700/50 transition-colors cursor-pointer" onClick={() => setFormData(prev => ({ ...prev, needs_funding: !prev.needs_funding }))}>
+                <input
+                  type="checkbox"
+                  id="needs_funding"
+                  name="needs_funding"
+                  checked={formData.needs_funding}
+                  onChange={handleChange}
+                  className="w-5 h-5 rounded border-slate-600 bg-slate-700 text-cyan-500 focus:ring-cyan-500 cursor-pointer"
+                />
+                <label htmlFor="needs_funding" className="ml-3 block font-medium text-slate-200 cursor-pointer flex-1">
+                  Need external funding to launch
+                </label>
+              </div>
+            </div>
+
+            {/* Error Message */}
+            {apiError && (
+              <div className="p-4 rounded-lg bg-red-950/50 border border-red-800/50 flex items-start gap-3">
+                <AlertCircle size={20} className="text-red-400 flex-shrink-0 mt-0.5" />
+                <p className="text-sm text-red-300">{apiError}</p>
+              </div>
+            )}
+
+            {/* Submit Button */}
+            <div className="pt-8 flex gap-4">
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 px-6 py-4 text-base font-semibold text-white transition-all hover:shadow-lg hover:shadow-cyan-500/30 disabled:opacity-70 disabled:cursor-not-allowed"
+              >
+                {isLoading ? (
+                  <>
+                    <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Analysing your idea...
+                  </>
+                ) : (
+                  <>
+                    <Lightbulb size={20} />
+                    Get Verdict
+                  </>
+                )}
+              </button>
+            </div>
+            </form>
           </div>
+        </div>
+
+        {/* Footer */}
+        <div className="mt-16 text-center text-sm text-slate-500 pb-8">
+          <p>Your ideas are evaluated with IVSM (Idea Viability Scoring Model) powered by AI</p>
         </div>
       </main>
     </div>
   )
 }
+
