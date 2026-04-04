@@ -3,7 +3,7 @@
 > **AI-powered startup idea stress-tester. Get investor-grade feedback in 60 seconds — not hype.**
 
 Built for the **OceanLab × CHARUSAT Hacks 2026** · April 3–5, DEPSTAR Campus · Theme: *Build AI-First SaaS*
-
+[![Live](https://img.shields.io/badge/Live-vistaraz.in-00C9A7?style=flat-square)](https://vistaraz.in)
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-ideaverdict.vercel.app-black?style=flat-square)](https://idea-verdict.vercel.app)
 [![Built with Supabase](https://img.shields.io/badge/Backend-Supabase-3ECF8E?style=flat-square&logo=supabase)](https://supabase.com)
 [![Gemini 2.5 Flash](https://img.shields.io/badge/AI-Gemini%202.5%20Flash-4285F4?style=flat-square&logo=google)](https://ai.google.dev)
@@ -13,7 +13,11 @@ Built for the **OceanLab × CHARUSAT Hacks 2026** · April 3–5, DEPSTAR Campus
 
 ## 🚀 What Is IdeaVerdict?
 
-Most startup feedback is either **generic encouragement** or **vague negativity**. Neither helps founders build better.
+Every year, thousands of Indian founders quit jobs, burn savings, and lose 12–18 months on a startup that was never going to work. Not because they were bad founders, but because nobody told them the truth before they started.
+
+Their friends said *"Great idea."* ChatGPT wrote them a business plan. Nobody told them what was broken or what already existed in the market.
+
+**IdeaVerdict closes that gap in 60 seconds.** Describe your idea in plain language — get a scored, structured, brutally honest verdict built for Indian founders, not Silicon Valley assumptions.
 
 IdeaVerdict runs your startup idea through the **IVSM framework** — 6 scored dimensions, each out of 10 — and returns one of four honest verdicts with specific, actionable critique. Think of it as a brutally honest co-founder who has read every YC rejection letter.
 
@@ -44,10 +48,18 @@ Six factors, each scored **0–10**, for a maximum of **60 points**.
 | 6 | **First Revenue Likelihood** | How quickly can this generate real revenue, not just users? |
 
 Each analysis also returns:
+- **What Already Exists in This Market** — AI-researched competitors from training knowledge, even if you didn't name them
 - **Why This Will Fail** — 3 idea-specific failure modes (no generic answers)
-- **Confidence Score** — 8 deterministic binary checks on input quality (max 100%)
-- **Competitor Confidence** — High / Medium / Low (model reasons from training data only, no live web search)
+- **Your 5-Step Action Plan** — specific 30–90 day steps, only shown for ideas scoring 40+
+- **Validate This First** — the single most critical assumption before you build
+- **Market Timing Note** — because a Drop It today might be a Build It in 18 months
+- **Analysis Confidence** — 8 binary checks on input quality (0–100%)
 
+**Competitor Awareness Penalty**
+The AI researches what exists in your market, regardless of whether you named competitors.
+- Named specific competitors → no penalty
+- Claims to know but named none → −1 from competition score
+- Doesn't know competitors at all → −2 from competition score
 ---
 
 ## 🛠️ Tech Stack
@@ -56,12 +68,18 @@ Each analysis also returns:
 Frontend    →  React + Vite + Tailwind CSS
 UI Library  →  Watermelon UI (ui.watermelon.sh)
 Auth + DB   →  Supabase (PostgreSQL + Row Level Security) with Google and LinkedIn 
-AI Proxy    →  Supabase Edge Function (Deno) — API key never exposed client-side
-AI Model    →  Gemini 2.5 Flash via Google AI Studio connect to Vercel 
+AI Proxy    →  Vercel Serverless Function (/api/analyze)
+              GEMINI_API_KEY stored as Vercel env variable — never exposed client-side
+AI Model    →  Gemini 2.5 Flash via Google AI Studio
               Base URL: https://generativelanguage.googleapis.com/v1beta/openai/
 Hosting     →  Vercel 
 ```
-
+---
+**Additional Features**
+- Light / Dark mode toggle, persisted across sessions
+- Google OAuth + LinkedIn OAuth one-click login
+- PDF export includes all sections — action plan, competitors, timing note, confidence breakdown
+- Full analysis history saved per user with per-card PDF download
 ---
 
 ## 🍉 What We Used from Watermelon UI
@@ -238,14 +256,14 @@ npm run dev
 
 ### Environment Variables
 
-**Backend (`.env.local`):**
+**Frontend (`.env.local`):**
 ```
 VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your_anon_key
 Connect Google and LinkedIn via API KEY for Auth 
 ```
 
-**Vercel Environment variable:**
+**Vercel Environment Variables (production):**
 ```
 GEMINI_API_KEY=your_google_ai_studio_key 
 ```
