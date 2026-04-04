@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { FaGoogle, FaApple } from "react-icons/fa";
+import { FaGoogle, FaLinkedin } from "react-icons/fa";
 
 const DEFAULT_TEXTS = {
   signInTitle: "Log In",
@@ -15,6 +15,7 @@ const DEFAULT_TEXTS = {
 };
 
 export default function SwapForm({
+  onLinkedInLogin,
   isSignIn,
   onModeChange,
   texts = {},
@@ -76,14 +77,14 @@ export default function SwapForm({
             Continue with Google
           </button>
 
-          {/* APPLE */}
+          {/* LinkedIn */}
           <button
-            type="button"
-            disabled
-            className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl bg-zinc-900 border border-zinc-800 text-white opacity-50"
-          >
-            <FaApple />
-            Continue with Apple
+          type="button"
+          onClick={onLinkedInLogin} 
+          className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl bg-zinc-900 border border-zinc-800 text-white hover:bg-zinc-800 transition"
+           >
+           <FaLinkedin />
+           Continue with LinkedIn
           </button>
 
           {/* DIVIDER */}
