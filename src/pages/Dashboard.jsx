@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { Lightbulb, Target, TrendingUp, Users, AlertCircle, CheckCircle } from 'lucide-react'
 import { SwitchMode } from '../components/SwitchMode'
+import { Indicator } from '../components/Indicator'
 
 export default function Dashboard() {
   const navigate = useNavigate()
@@ -230,6 +231,24 @@ Needs External Funding: ${formData.needs_funding}`;
           </nav>
         </div>
       </header>
+
+      {/* Loading Overlay */}
+      {isLoading && (
+        <div className="fixed inset-0 bg-black/50 dark:bg-black/40 backdrop-blur-sm z-40 flex items-center justify-center transition-colors">
+          <div className="bg-slate-900 dark:bg-white rounded-2xl p-8 shadow-2xl max-w-sm w-full mx-4">
+            <Indicator
+              labels={[
+                'analyzing your idea...',
+                'evaluating factors...',
+                'checking market fit...',
+                'processing insights...',
+                'generating verdict...',
+              ]}
+              intervalMs={2000}
+            />
+          </div>
+        </div>
+      )}
 
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-6 py-12">
