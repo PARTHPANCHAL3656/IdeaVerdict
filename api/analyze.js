@@ -18,7 +18,7 @@ export default async function handler(req, res) {
         body: JSON.stringify({
           model: 'gemini-2.5-flash',
           response_format: { type: 'json_object' },
-          max_tokens: 1500,
+          max_tokens: 2500,
           messages: req.body.messages
         })
       }
