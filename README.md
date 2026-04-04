@@ -62,9 +62,56 @@ AI Model    →  Gemini 2.5 Flash via Google AI Studio
 Hosting     →  Vercel
 ```
 
-### Why Watermelon UI?
+## 🍉 Why Watermelon UI?
 
-We're using [**ui.watermelon.sh**](https://ui.watermelon.sh) for the component layer. It gave us production-grade, accessible UI components with a clean design system that we could customise with Tailwind — without spending hackathon hours rebuilding buttons and modals from scratch. It directly contributed to the polish of the results dashboard and the verdict badge system.
+We're using [**ui.watermelon.sh**](https://ui.watermelon.sh) for the component layer. It gave us production-grade, accessible UI components with a clean design system that we could customise with Tailwind — without spending hackathon hours rebuilding buttons and modals from scratch.
+
+This directly improved the polish of our results dashboard, scoring UI, and overall user experience.
+
+---
+
+## 🍉 What We Used from Watermelon UI
+
+We leveraged selected components and design patterns from Watermelon UI to accelerate development and maintain a polished, production-grade interface.
+
+### 🔧 Components Used (in order of integration)
+
+- **Auth Page Pattern**  
+  Used as the base for login/signup flow with a clean and accessible layout.
+
+- **Theme Switch (`switch-mode`)**  
+  Enables light/dark mode toggling for improved usability.
+
+- **Progress Indicator (`labeled-progress-indicator`)**  
+  Displays scoring progress and analysis stages clearly to the user.
+
+- **Dashboard UI Inspiration**  
+  Used layout and spacing patterns for:
+  - Results page
+  - Verdict badge
+  - Score breakdown cards
+
+---
+
+### 🔗 References
+
+- Swap Form Animation  
+  https://ui.watermelon.sh/animated-components/swap-form  
+
+- Theme Switch  
+  https://ui.watermelon.sh/animated-components/switch-mode  
+
+- Progress Indicator  
+  https://ui.watermelon.sh/animated-components/labeled-progress-indicator  
+
+- Dashboard Designs  
+  https://ui.watermelon.sh/dashboards  
+
+---
+
+### 📌 Note
+
+All components were customized using Tailwind CSS to match the IdeaVerdict design system and ensure consistency across the application.
 
 ### Why Gemini 2.5 Flash?
 
