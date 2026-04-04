@@ -11,20 +11,17 @@ export default function Auth() {
   const [error, setError] = useState(null)
   const navigate = useNavigate()
 
-  // ✅ EMAIL/PASSWORD AUTH
+  // EMAIL/PASSWORD
   const handleAuth = async () => {
     setLoading(true)
     setError(null)
 
     try {
       if (!isSignIn) {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-        })
+        const { error } = await supabase.auth.signUp({ email, password })
         if (error) throw error
 
-        alert('Check your email for the confirmation link!')
+        alert('Check your email for confirmation!')
         setEmail('')
         setPassword('')
       } else {
@@ -43,38 +40,32 @@ export default function Auth() {
     }
   }
 
-  // ✅ GOOGLE AUTH (NEW)
+  // GOOGLE LOGIN
   const handleGoogleLogin = async () => {
     setError(null)
 
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-              redirectTo: window.location.origin + '/dashboard',
+        redirectTo: window.location.origin + '/dashboard',
       },
     })
 
-    if (error) {
-      console.error(error.message)
-      setError(error.message)
-    }
+    if (error) setError(error.message)
   }
 
-  // ✅ LINKEDIN AUTH (NEW)
+  // LINKEDIN LOGIN
   const handleLinkedInLogin = async () => {
     setError(null)
 
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'linkedin_oidc',
       options: {
-              redirectTo: window.location.origin + '/dashboard',
+        redirectTo: window.location.origin + '/dashboard',
       },
     })
 
-    if (error) {
-      console.error(error.message)
-      setError(error.message)
-    }
+    if (error) setError(error.message)
   }
 
   return (
