@@ -75,23 +75,85 @@ Fast, cheap, and capable of structured JSON output — exactly what IVSM needs. 
 ## 🗄️ Database Schema
 
 ```sql
--- Users (auto-created on signup via Supabase trigger)
-profiles (
-  id          uuid references auth.users primary key,
-  email       text,
-  created_at  timestamptz default now()
-)
+-- 1. Profiles table
 
--- All analyses are stored per user
-analyses (
-  id          uuid default gen_random_uuid() primary key,
-  user_id     uuid references profiles(id),
-  idea_title  text,
-  idea_slug   text,           -- server-injected, URL-safe identifier
-  result      jsonb,          -- full IVSM JSON output
-  scored_at   timestamptz,    -- server-injected timestamp
-  created_at  timestamptz default now()
-)
+create table if not exists profiles (
+  id uuid references auth.users on delete cascade primary key,
+  email text,
+  created_at timestamptz default now()
+);
+alter table profiles enable row level security;
+
+drop policy if exists "Users can read own profile" on profiles;  -- ADD THIS
+create policy "Users can read own profile"
+  on profiles for select
+  using (auth.uid() = id);
+
+-- 2. Drop + recreate analyses
+drop table if exists analyses;
+
+create table analyses (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references auth.users on delete cascade not null,
+
+  -- Server-injected
+  idea_slug text not null,
+  scored_at timestamptz default now() not null,
+
+  -- Input fields
+  idea_title text not null,
+  idea_description text not null,
+  problem_statement text,
+  domain_expertise text,
+  technical_skills text,
+  target_user text not null,
+  india_market_context text,
+  expects_revenue text not null,
+  knows_competitors boolean default false,
+  named_competitors text,
+  team_size text not null,
+  needs_funding boolean default false,
+
+  -- Denormalized for history queries
+  verdict text not null,
+  total_score integer not null,
+
+  -- Full AI response
+  result jsonb not null
+);
+
+create index on analyses(user_id, scored_at desc);
+
+alter table analyses enable row level security;
+
+create policy "Users can read own analyses"
+  on analyses for select
+  using (auth.uid() = user_id);
+
+create policy "Users can insert own analyses"
+  on analyses for insert
+  with check (auth.uid() = user_id);
+
+create policy "Users can delete own analyses"
+  on analyses for delete
+  using (auth.uid() = user_id);
+
+-- 3. Trigger (drop first to avoid duplicate error)
+drop trigger if exists on_auth_user_created on auth.users;
+
+create or replace function public.handle_new_user()
+returns trigger as $$
+begin
+  insert into public.profiles (id, email)
+  values (new.id, new.email)
+  on conflict (id) do nothing;
+  return new;
+end;
+$$ language plpgsql security definer;
+
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute procedure public.handle_new_user();
 ```
 
 **RLS Policy:** `auth.uid() = user_id` — users can only read and write their own analyses.
