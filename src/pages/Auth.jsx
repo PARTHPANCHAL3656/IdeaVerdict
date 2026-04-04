@@ -60,6 +60,23 @@ export default function Auth() {
     }
   }
 
+  // ✅ LINKEDIN AUTH (NEW)
+  const handleLinkedInLogin = async () => {
+    setError(null)
+
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'linkedin',
+      options: {
+        redirectTo: 'http://localhost:5173/dashboard',
+      },
+    })
+
+    if (error) {
+      console.error(error.message)
+      setError(error.message)
+    }
+  }
+
   return (
     <div className="flex min-h-screen items-center justify-center p-4 bg-white dark:bg-zinc-950">
       <SwapForm
@@ -72,9 +89,8 @@ export default function Auth() {
         onSubmit={handleAuth}
         loading={loading}
         error={error}
-
-        // ✅ PASS GOOGLE FUNCTION TO COMPONENT
         onGoogleLogin={handleGoogleLogin}
+        onLinkedInLogin={handleLinkedInLogin}
       />
     </div>
   )
