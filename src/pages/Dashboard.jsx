@@ -262,7 +262,7 @@ Needs External Funding: ${formData.needs_funding}`;
           </h2>
           <p className="text-lg text-slate-400 dark:text-slate-600 max-w-2xl mx-auto leading-relaxed">
             <p> Get brutally honest AI-powered feedback on your startup idea. </p>
-            Discover if it's a 
+            Discover if it's a  
             <span className="text-cyan-400 dark:text-cyan-600">Build It</span>, 
             <span className="text-yellow-400 dark:text-yellow-600">Pivot It</span>, 
             <span className="text-orange-400 dark:text-orange-600">Drop It</span>, or a 
