@@ -207,6 +207,9 @@ export default function Results() {
             {result.verdict === 'Sleeper Hit' && result.sleeper_hit_reason && (
               <p className="mt-5 text-center text-sm font-medium border-t border-current/20 pt-4 px-4 w-full max-w-md">{result.sleeper_hit_reason}</p>
             )}
+            {result.timing_note && (
+              <p className="mt-4 text-center text-xs italic text-slate-400 dark:text-slate-500 transition-colors">{result.timing_note}</p>
+            )}
           </div>
 
           {/* SCORE BREAKDOWN */}
@@ -235,6 +238,56 @@ export default function Results() {
                 {result.why_this_will_fail.map((reason, idx) => (
                   <div key={idx} className="p-4 rounded-lg bg-slate-950 dark:bg-slate-200 border border-slate-800 dark:border-slate-300 text-slate-300 dark:text-slate-700 text-sm leading-relaxed transition-colors">
                     {reason}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* WHAT ALREADY EXISTS IN MARKET */}
+          {(result.similar_products_in_market && result.similar_products_in_market.length > 0) && (
+            <div>
+              <h3 className="text-lg font-bold mb-4 tracking-tight text-white dark:text-slate-900 border-b border-slate-800 dark:border-slate-300 pb-2 transition-colors">What Already Exists in This Market</h3>
+              <div className="space-y-3">
+                {result.similar_products_in_market.map((product, idx) => {
+                  const [name, ...rest] = product.split('—');
+                  const description = rest.join('—').trim();
+                  return (
+                    <div key={idx} className="p-4 rounded-lg bg-slate-900 dark:bg-slate-100 border border-slate-800 dark:border-slate-300 transition-colors flex items-start gap-3">
+                      <span className="text-xl flex-shrink-0 mt-0.5">🏢</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-slate-100 dark:text-slate-900 text-sm">
+                          <span className="font-bold">{name.trim()}</span>
+                          {description && <> — <span className="text-slate-400 dark:text-slate-600">{description}</span></>
+                          }
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* YOUR ACTION PLAN */}
+          {(result.action_plan && result.action_plan.length > 0) && (
+            <div>
+              <div className="mb-4">
+                <h3 className="text-lg font-bold tracking-tight text-white dark:text-slate-900 border-b border-slate-800 dark:border-slate-300 pb-2 transition-colors">Your 5-Step Action Plan</h3>
+                <p className="text-xs text-slate-400 dark:text-slate-500 mt-2 italic transition-colors">Only shown for ideas scoring 40+</p>
+              </div>
+              <div className="space-y-4">
+                {result.action_plan.map((step, idx) => (
+                  <div key={idx} className="flex gap-4">
+                    <div className="flex-shrink-0">
+                      <div className="flex items-center justify-center h-8 w-8 rounded-full bg-gradient-to-br from-teal-400 to-cyan-500 text-white font-bold text-sm">
+                        {step.step || idx + 1}
+                      </div>
+                    </div>
+                    <div className="flex-1 pt-0.5">
+                      <p className="text-slate-100 dark:text-slate-900 font-bold text-sm transition-colors">{step.title}</p>
+                      <p className="text-slate-400 dark:text-slate-600 text-sm mt-1 leading-relaxed transition-colors">{step.detail}</p>
+                    </div>
                   </div>
                 ))}
               </div>
