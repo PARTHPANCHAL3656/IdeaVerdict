@@ -12,9 +12,9 @@ export function SwitchMode() {
       className="relative inline-flex items-center justify-between w-16 h-8 rounded-full bg-slate-700 dark:bg-slate-300 transition-colors border border-slate-600 dark:border-slate-400"
       title={`Switch to ${isDark ? 'dark' : 'light'} mode`}
     >
-      {/* Sun Icon - Left */}
+      {/* Moon Icon - Left */}
       <div className="relative z-10 flex items-center justify-center w-7 h-7 ml-0.5">
-        <Sun size={16} className="text-amber-400 dark:text-slate-400" />
+        <Moon size={16} className="text-slate-400 dark:text-cyan-300" />
       </div>
 
       {/* Slider Circle */}
@@ -32,9 +32,9 @@ export function SwitchMode() {
         }}
       />
 
-      {/* Moon Icon - Right */}
+      {/* Sun Icon - Right */}
       <div className="relative z-10 flex items-center justify-center w-7 h-7 mr-0.5">
-        <Moon size={16} className="text-slate-400 dark:text-cyan-300" />
+        <Sun size={16} className="text-amber-400 dark:text-slate-400" />
       </div>
     </motion.button>
   )
