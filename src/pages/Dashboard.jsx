@@ -24,23 +24,6 @@ export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(false)
   const [apiError, setApiError] = useState(null)
 
-  useEffect(() => {
-    const checkSession = async () => {
-      const { data } = await supabase.auth.getSession()
-
-      if (!data.session) {
-        navigate('/auth')
-      } else {
-        // remove token from URL
-        window.history.replaceState({}, document.title, '/dashboard')
-      }
-
-      setLoadingSession(false)
-    }
-
-    checkSession()
-  }, [])
-  
   const handleLogout = async () => {
     await supabase.auth.signOut()
     navigate('/auth')
