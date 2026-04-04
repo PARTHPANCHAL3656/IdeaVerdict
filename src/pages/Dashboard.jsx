@@ -131,20 +131,17 @@ Needs External Funding: ${formData.needs_funding}`;
       let parsedResult = null;
 
       try {
-        const response = await fetch('https://generativelanguage.googleapis.com/v1beta/openai/', {
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'x-api-key': import.meta.env.VITE_GEMINI_API_KEY,
-            'anthropic-version': '2023-06-01',
-            'anthropic-dangerous-direct-browser-access': 'true'
+            'Authorization': `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`
           },
           body: JSON.stringify({
-            model: 'gemini-2.5-flash',
-            response_mime_type: "application/json",
-            max_tokens: 1500,
-            system: systemPrompt,
+            model: 'llama-3.3-70b-versatile',
+            response_format: { type: "json_object" },
             messages: [
+              { role: 'system', content: systemPrompt },
               { role: 'user', content: userMessage }
             ]
           })
@@ -152,28 +149,27 @@ Needs External Funding: ${formData.needs_funding}`;
 
         if (!response.ok) {
           const errText = await response.text();
-          throw new Error(`Anthropic API Error: ${response.status} - ${errText}`);
+          throw new Error(`Groq API Error: ${response.status} - ${errText}`);
         }
 
         const rawData = await response.json();
-        const contentStr = rawData.content?.[0]?.text;
+        const contentStr = rawData.choices?.[0]?.message?.content;
 
         if (contentStr) {
-
           let cleanedJsonStr = contentStr.trim();
-          if (cleanedJsonStr.startsWith('\`\`\`json')) cleanedJsonStr = cleanedJsonStr.slice(7);
-          if (cleanedJsonStr.startsWith('\`\`\`')) cleanedJsonStr = cleanedJsonStr.slice(3);
-          if (cleanedJsonStr.endsWith('\`\`\`')) cleanedJsonStr = cleanedJsonStr.slice(0, -3);
+          if (cleanedJsonStr.startsWith('```json')) cleanedJsonStr = cleanedJsonStr.slice(7);
+          if (cleanedJsonStr.startsWith('```')) cleanedJsonStr = cleanedJsonStr.slice(3);
+          if (cleanedJsonStr.endsWith('```')) cleanedJsonStr = cleanedJsonStr.slice(0, -3);
           cleanedJsonStr = cleanedJsonStr.trim();
 
           parsedResult = JSON.parse(cleanedJsonStr);
         }
       } catch (apiError) {
-        console.error("Anthropic API error:", apiError);
+        console.error("Groq API error:", apiError);
         throw apiError;
       }
 
-      if (!parsedResult) throw new Error('All models failed');
+      if (!parsedResult) throw new Error('Analysis generation failed. Please try again.');
 
       const { data: userData, error: userError } = await supabase.auth.getUser();
       if (userError || !userData?.user) throw new Error("Authentication error. Please log in again.");
