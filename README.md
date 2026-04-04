@@ -55,18 +55,12 @@ Each analysis also returns:
 ```
 Frontend    →  React + Vite + Tailwind CSS
 UI Library  →  Watermelon UI (ui.watermelon.sh)
-Auth + DB   →  Supabase (PostgreSQL + Row Level Security)
+Auth + DB   →  Supabase (PostgreSQL + Row Level Security) with Google and LinkedIn 
 AI Proxy    →  Supabase Edge Function (Deno) — API key never exposed client-side
-AI Model    →  Gemini 2.5 Flash via Google AI Studio
+AI Model    →  Gemini 2.5 Flash via Google AI Studio connect to Vercel 
               Base URL: https://generativelanguage.googleapis.com/v1beta/openai/
-Hosting     →  Vercel
+Hosting     →  Vercel 
 ```
-
-## 🍉 Why Watermelon UI?
-
-We're using [**ui.watermelon.sh**](https://ui.watermelon.sh) for the component layer. It gave us production-grade, accessible UI components with a clean design system that we could customise with Tailwind — without spending hackathon hours rebuilding buttons and modals from scratch.
-
-This directly improved the polish of our results dashboard, scoring UI, and overall user experience.
 
 ---
 
@@ -77,7 +71,7 @@ We leveraged selected components and design patterns from Watermelon UI to accel
 ### 🔧 Components Used (in order of integration)
 
 - **Auth Page Pattern**  
-  Used as the base for login/signup flow with a clean and accessible layout.
+  Used as the base for the login/signup flow with a clean and accessible layout.
 
 - **Theme Switch (`switch-mode`)**  
   Enables light/dark mode toggling for improved usability.
@@ -111,7 +105,7 @@ We leveraged selected components and design patterns from Watermelon UI to accel
 
 ### 📌 Note
 
-All components were customized using Tailwind CSS to match the IdeaVerdict design system and ensure consistency across the application.
+All components were customised using Tailwind CSS to match the IdeaVerdict design system and ensure consistency across the application.
 
 ### Why Gemini 2.5 Flash?
 
@@ -244,15 +238,16 @@ npm run dev
 
 ### Environment Variables
 
-**Frontend (`.env.local`):**
+**Backend (`.env.local`):**
 ```
 VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your_anon_key
+Connect Google and LinkedIn via API KEY for Auth 
 ```
 
-**Supabase Secrets (set via CLI or dashboard):**
+**Vercel Environment variable:**
 ```
-GEMINI_API_KEY=your_google_ai_studio_key
+GEMINI_API_KEY=your_google_ai_studio_key 
 ```
 
 ---
@@ -262,13 +257,15 @@ GEMINI_API_KEY=your_google_ai_studio_key
 ```
 IdeaVerdict/
 │
-├── api/                         # Serverless backend (Vercel functions)
+├── api/                        # Serverless backend (Vercel functions)
 │   └── analyze.js              # Core AI analysis endpoint
 │
 ├── src/                        # Frontend source code
 │   │
 │   ├── components/             # Reusable UI components
 │   │   ├── AuthGuard.jsx
+|   |   ├── index.js
+|   |   ├── indicator.jsx
 │   │   ├── SwapForm.jsx
 │   │   ├── SwitchMode.jsx
 │   │   └── ThemeContext.jsx
@@ -288,9 +285,8 @@ IdeaVerdict/
 │   ├── main.jsx                # App entry point
 │   └── index.css               # Global styles
 │
-├── public/                     # Static assets (if used)
 │
-├── dist/                       # Production build (auto-generated)
+├── dist/                       # Production build (auto-generated) and (ignored)
 ├── node_modules/               # Dependencies (ignored)
 │
 ├── .env.local                  # Environment variables (DO NOT COMMIT)
@@ -331,11 +327,11 @@ IdeaVerdict/
     "competition_differentiation": 7
   },
   "why_this_will_fail": [
-    "Parents in India prioritize trust and proven outcomes over accessibility; an AI-only tutor may struggle to compete with human tutors and established edtech platforms.",
+    "Parents in India prioritise trust and proven outcomes over accessibility; an AI-only tutor may struggle to compete with human tutors and established edtech platforms.",
     "Ensuring consistently accurate, syllabus-aligned explanations across CBSE, state boards, and multiple languages is a complex and resource-heavy challenge for a small team.",
     "Generic AI APIs may produce shallow or incorrect explanations, which can directly impact learning outcomes and user trust.",
     "WhatsApp lacks built-in mechanisms for long-term engagement such as structured curriculum tracking, accountability, and peer learning.",
-    "Sustaining student motivation over months requires mentorship, personalization, and feedback loops beyond simple Q&A interactions."
+    "Sustaining student motivation over months requires mentorship, personalisation, and feedback loops beyond simple Q&A interactions."
   ],
   "validate_this_first": [
     "Can the AI consistently provide accurate, step-by-step explanations for Math and Science problems in Hinglish or regional languages?",
