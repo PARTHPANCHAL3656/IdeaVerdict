@@ -1,10 +1,9 @@
-import { useState, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState } from 'react'
+import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 
 export default function Dashboard() {
   const navigate = useNavigate()
-  const resultRef = useRef(null)
 
   const [formData, setFormData] = useState({
     idea_title: '',
@@ -23,7 +22,6 @@ export default function Dashboard() {
 
   const [errors, setErrors] = useState({})
   const [isLoading, setIsLoading] = useState(false)
-  const [result, setResult] = useState(null)
   const [apiError, setApiError] = useState(null)
 
   const handleLogout = async () => {
@@ -133,29 +131,34 @@ Needs External Funding: ${formData.needs_funding}`;
       let parsedResult = null;
 
       try {
-        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        const response = await fetch('https://generativelanguage.googleapis.com/v1beta/openai/', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`
+            'x-api-key': import.meta.env.VITE_GEMINI_API_KEY,
+            'anthropic-version': '2023-06-01',
+            'anthropic-dangerous-direct-browser-access': 'true'
           },
           body: JSON.stringify({
-            model: 'llama-3.3-70b-versatile',
+            model: 'gemini-2.5-flash',
+            response_mime_type: "application/json",
+            max_tokens: 1500,
+            system: systemPrompt,
             messages: [
-              { role: 'system', content: systemPrompt },
               { role: 'user', content: userMessage }
-            ],
-            response_format: { type: "json_object" }
+            ]
           })
         });
 
         if (!response.ok) {
           const errText = await response.text();
-          throw new Error(`Groq API Error: ${response.status} - ${errText}`);
+          throw new Error(`Anthropic API Error: ${response.status} - ${errText}`);
         }
 
         const rawData = await response.json();
-        const contentStr = rawData.choices?.[0]?.message?.content;
+        const contentStr = rawData.content?.[0]?.text;
+
+        if (contentStr) {
 
           let cleanedJsonStr = contentStr.trim();
           if (cleanedJsonStr.startsWith('\`\`\`json')) cleanedJsonStr = cleanedJsonStr.slice(7);
@@ -164,17 +167,46 @@ Needs External Funding: ${formData.needs_funding}`;
           cleanedJsonStr = cleanedJsonStr.trim();
 
           parsedResult = JSON.parse(cleanedJsonStr);
-        } catch (apiError) {
-          console.error("Groq API error:", apiError);
-          throw apiError;
         }
+      } catch (apiError) {
+        console.error("Anthropic API error:", apiError);
+        throw apiError;
+      }
 
       if (!parsedResult) throw new Error('All models failed');
 
-      setResult(parsedResult);
-      setTimeout(() => {
-        resultRef.current?.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+      if (userError || !userData?.user) throw new Error("Authentication error. Please log in again.");
+
+      const ideaSlug = formData.idea_title.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') || 'idea';
+
+      const { data: insertedData, error: insertError } = await supabase
+        .from('analyses')
+        .insert({
+          user_id: userData.user.id,
+          idea_slug: ideaSlug,
+          idea_title: formData.idea_title,
+          idea_description: formData.idea_description,
+          problem_statement: formData.problem_statement,
+          domain_expertise: formData.domain_expertise,
+          technical_skills: formData.technical_skills,
+          target_user: formData.target_user,
+          india_market_context: formData.india_market_context,
+          expects_revenue: formData.expects_revenue,
+          knows_competitors: formData.knows_competitors,
+          named_competitors: formData.named_competitors,
+          team_size: formData.team_size,
+          needs_funding: formData.needs_funding,
+          verdict: parsedResult.verdict,
+          total_score: parsedResult.total_score,
+          result: parsedResult
+        })
+        .select()
+        .single();
+        
+      if (insertError) throw insertError;
+
+      navigate(`/results/${insertedData.id}`);
 
     } catch (e) {
       console.error(e);
@@ -184,46 +216,21 @@ Needs External Funding: ${formData.needs_funding}`;
     }
   };
 
-  const getVerdictStyle = (verdict) => {
-    switch (verdict) {
-      case 'Build It': return 'bg-green-500/10 text-green-400 border-green-500/20';
-      case 'Pivot It': return 'bg-amber-500/10 text-amber-400 border-amber-500/20';
-      case 'Drop It': return 'bg-red-500/10 text-red-400 border-red-500/20';
-      case 'Sleeper Hit': return 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20';
-      default: return 'bg-slate-500/10 text-slate-400 border-slate-500/20';
-    }
-  };
-
-  const factorLabels = {
-    problem_clarity: "Problem Clarity",
-    target_user_fit: "Target User Fit",
-    india_market_fit: "India Market Fit",
-    competition_differentiation: "Competition & Differentiation",
-    domain_expertise_required: "Domain Expertise Required",
-    first_revenue_likelihood: "First Revenue Likelihood"
-  };
-
-  const confidenceLabels = {
-    problem_clearly_defined: "Problem Defined",
-    target_user_specific: "User Specific",
-    india_context_provided: "India Context",
-    competitors_named: "Competitors Named",
-    revenue_timeline_given: "Revenue Timeline",
-    team_size_known: "Team Size Known",
-    funding_stance_clear: "Funding Stance",
-    idea_description_sufficient: "Description Sufficient"
-  };
-
   return (
     <div className="flex min-h-screen flex-col p-6 bg-slate-950 text-white pb-24">
       <header className="flex items-center justify-between py-4 border-b border-slate-800">
         <h1 className="text-2xl font-bold tracking-tight text-white">IdeaVerdict</h1>
-        <button
-          onClick={handleLogout}
-          className="text-sm font-medium text-slate-400 hover:text-slate-100 transition-colors"
-        >
-          Logout
-        </button>
+        <div className="flex items-center gap-6">
+          <Link to="/history" className="text-sm font-medium text-slate-400 hover:text-slate-100 transition-colors">
+            Library
+          </Link>
+          <button
+            onClick={handleLogout}
+            className="text-sm font-medium text-slate-400 hover:text-slate-100 transition-colors"
+          >
+            Logout
+          </button>
+        </div>
       </header>
 
       <main className="flex flex-col items-center flex-1 space-y-6 mt-8">
@@ -445,93 +452,6 @@ Needs External Funding: ${formData.needs_funding}`;
             </button>
           </div>
         </div>
-
-        {/* RESULTS SECTION */}
-        {result && (
-          <div ref={resultRef} className="w-full max-w-2xl text-left bg-slate-900 border border-slate-800 rounded-xl p-8 shadow-xl mt-8 space-y-10">
-
-            {/* VERDICT BADGE */}
-            <div className={`flex flex-col items-center justify-center p-8 border rounded-xl ${getVerdictStyle(result.verdict)}`}>
-              <span className="uppercase text-sm tracking-widest font-bold opacity-80 mb-2">Verdict</span>
-              <span className="text-5xl font-black mb-2 tracking-tight">{result.verdict}</span>
-              <span className="text-xl opacity-90 font-medium">Score: {result.total_score} / 60</span>
-              {result.verdict === 'Sleeper Hit' && result.sleeper_hit_reason && (
-                <p className="mt-5 text-center text-sm font-medium border-t border-current/20 pt-4 px-4 w-full max-w-md">{result.sleeper_hit_reason}</p>
-              )}
-            </div>
-
-            {/* SCORE BREAKDOWN */}
-            <div>
-              <h3 className="text-lg font-bold mb-5 tracking-tight text-white border-b border-slate-800 pb-2">Score Breakdown</h3>
-              <div className="space-y-5">
-                {Object.entries(result.scores || {}).map(([key, score]) => (
-                  <div key={key}>
-                    <div className="flex justify-between text-sm mb-2">
-                      <span className="text-slate-300 font-medium">{factorLabels[key] || key}</span>
-                      <span className="text-slate-400 font-mono font-medium">{score}/10</span>
-                    </div>
-                    <div className="w-full bg-slate-800 rounded-full h-2 break-inside-avoid">
-                      <div className="bg-slate-400 h-2 rounded-full" style={{ width: `${(score / 10) * 100}%` }}></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* WHY THIS WILL FAIL */}
-            {(result.why_this_will_fail && result.why_this_will_fail.length > 0) && (
-              <div>
-                <h3 className="text-lg font-bold mb-4 tracking-tight text-white border-b border-slate-800 pb-2">Why This Will Fail</h3>
-                <div className="space-y-3">
-                  {result.why_this_will_fail.map((reason, idx) => (
-                    <div key={idx} className="p-4 rounded-lg bg-slate-950 border border-slate-800 text-slate-300 text-sm leading-relaxed">
-                      {reason}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* ONE THING TO VALIDATE FIRST */}
-            {result.one_thing_to_validate_first && (
-              <div>
-                <h3 className="text-lg font-bold mb-4 tracking-tight text-white border-b border-slate-800 pb-2">Validate This First</h3>
-                <div className="p-5 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-200 text-base font-medium leading-relaxed shadow-inner">
-                  {result.one_thing_to_validate_first}
-                </div>
-              </div>
-            )}
-
-            {/* CONFIDENCE METER */}
-            <div>
-              <h3 className="text-lg font-bold mb-5 tracking-tight text-white border-b border-slate-800 pb-2">Analysis Confidence: {result.confidence}%</h3>
-              <div className="mb-5">
-                <div className="w-full bg-slate-800 rounded-full h-2">
-                  <div className={`h-2 rounded-full ${result.confidence >= 70 ? 'bg-green-500' : result.confidence >= 40 ? 'bg-amber-500' : 'bg-red-500'}`} style={{ width: `${result.confidence}%` }}></div>
-                </div>
-              </div>
-
-              <div className="flex flex-wrap gap-2">
-                {Object.entries(result.confidence_breakdown || {}).map(([key, isTrue]) => (
-                  <span key={key} className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${isTrue ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-slate-800 text-slate-500 border-slate-700'}`}>
-                    {confidenceLabels[key] || key}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <button
-              onClick={() => {
-                setResult(null);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-              className="w-full flex items-center justify-center rounded-md bg-transparent border border-slate-700 px-4 py-3 text-sm font-bold text-slate-300 transition-colors hover:bg-slate-800 hover:text-white mt-8 focus:outline-none focus:ring-2 focus:ring-slate-500"
-            >
-              ANALYSE ANOTHER IDEA
-            </button>
-
-          </div>
-        )}
       </main>
     </div>
   )
