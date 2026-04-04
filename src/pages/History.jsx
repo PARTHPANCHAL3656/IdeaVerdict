@@ -123,11 +123,11 @@ export default function History() {
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-slate-800/50 dark:border-slate-200/30 bg-slate-950/80 dark:bg-white/80 backdrop-blur-xl transition-colors">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link to="/dashboard" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+          <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center">
               <Lightbulb size={24} className="text-white" />
             </div>
-            <h1 className="text-2xl font-bold tracking-tight">IdeaVerdict</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-white dark:text-slate-900 transition-colors">IdeaVerdict</h1>
           </Link>
           <nav className="flex items-center gap-8">
             <Link to="/dashboard" className="text-sm font-medium text-slate-400 dark:text-slate-600 hover:text-slate-200 dark:hover:text-slate-900 transition-colors hover:underline">
