@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { Lightbulb, Target, TrendingUp, Users, AlertCircle, CheckCircle } from 'lucide-react'
+import { SwitchMode } from '../components/SwitchMode'
 
 export default function Dashboard() {
   const navigate = useNavigate()
@@ -205,9 +206,9 @@ Needs External Funding: ${formData.needs_funding}`;
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 dark:from-slate-50 dark:via-white dark:to-slate-50 text-white dark:text-slate-900 transition-colors">
       {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-slate-800/50 bg-slate-950/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-50 border-b border-slate-800/50 dark:border-slate-200/30 bg-slate-950/80 dark:bg-white/80 backdrop-blur-xl transition-colors">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center">
@@ -216,12 +217,13 @@ Needs External Funding: ${formData.needs_funding}`;
             <h1 className="text-2xl font-bold tracking-tight">IdeaVerdict</h1>
           </div>
           <nav className="flex items-center gap-8">
-            <Link to="/history" className="text-sm font-medium text-slate-400 hover:text-slate-200 transition-colors hover:underline">
+            <Link to="/history" className="text-sm font-medium text-slate-400 dark:text-slate-600 hover:text-slate-200 dark:hover:text-slate-900 transition-colors hover:underline">
               Library
             </Link>
+            <SwitchMode />
             <button
               onClick={handleLogout}
-              className="text-sm font-medium px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 transition-colors text-slate-300"
+              className="text-sm font-medium px-4 py-2 rounded-lg bg-slate-800 dark:bg-slate-200 hover:bg-slate-700 dark:hover:bg-slate-300 transition-colors text-slate-300 dark:text-slate-900"
             >
               Logout
             </button>
@@ -233,36 +235,36 @@ Needs External Funding: ${formData.needs_funding}`;
       <main className="max-w-6xl mx-auto px-6 py-12">
         {/* Hero Section */}
         <div className="mb-12 text-center">
-          <div className="inline-block mb-4 px-3 py-1 rounded-full bg-cyan-950/50 border border-cyan-700/50">
-            <span className="text-xs font-semibold text-cyan-300">Startup Evaluation</span>
+          <div className="inline-block mb-4 px-3 py-1 rounded-full bg-cyan-950/50 dark:bg-cyan-100 border border-cyan-700/50 dark:border-cyan-300">
+            <span className="text-xs font-semibold text-cyan-300 dark:text-cyan-700">Startup Evaluation</span>
           </div>
-          <h2 className="text-5xl font-bold tracking-tight mb-4 bg-gradient-to-r from-slate-100 to-slate-400 bg-clip-text text-transparent">
+          <h2 className="text-5xl font-bold tracking-tight mb-4 bg-gradient-to-r from-slate-100 dark:from-slate-950 to-slate-400 dark:to-slate-700 bg-clip-text text-transparent">
             Validate Your Idea
           </h2>
-          <p className="text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed">
-            Get brutally honest AI-powered feedback on your startup idea. Discover if it's a <span className="text-cyan-400">Build It</span>, <span className="text-yellow-400">Pivot It</span>, <span className="text-orange-400">Drop It</span>, or a <span className="text-green-400">Sleeper Hit</span>.
+          <p className="text-lg text-slate-400 dark:text-slate-600 max-w-2xl mx-auto leading-relaxed">
+            Get brutally honest AI-powered feedback on your startup idea. Discover if it's a <span className="text-cyan-400 dark:text-cyan-600">Build It</span>, <span className="text-yellow-400 dark:text-yellow-600">Pivot It</span>, <span className="text-orange-400 dark:text-orange-600">Drop It</span>, or a <span className="text-green-400 dark:text-green-600">Sleeper Hit</span>.
           </p>
         </div>
 
         {/* Form Container */}
         <div className="relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-cyan-600/10 to-blue-600/10 rounded-2xl blur-xl"></div>
-          <div className="relative bg-slate-900/60 backdrop-blur border border-slate-800/50 rounded-2xl p-8 lg:p-12">
+          <div className="absolute inset-0 bg-gradient-to-r from-cyan-600/10 dark:from-cyan-600/5 to-blue-600/10 dark:to-blue-600/5 rounded-2xl blur-xl transition-colors"></div>
+          <div className="relative bg-slate-900/60 dark:bg-slate-100/60 backdrop-blur border border-slate-800/50 dark:border-slate-200/30 rounded-2xl p-8 lg:p-12 transition-colors">
             <form onSubmit={handleSubmit} className="space-y-8">
               {/* Section Header */}
               <div className="text-center mb-8">
-                <h3 className="text-2xl font-semibold text-white mb-2 flex items-center justify-center gap-2">
+                <h3 className="text-2xl font-semibold text-white dark:text-slate-900 mb-2 flex items-center justify-center gap-2 transition-colors">
                   <Lightbulb size={24} className="text-cyan-400" />
                   Your Idea
                 </h3>
-                <p className="text-base text-slate-400">Tell us what you're building</p>
+                <p className="text-base text-slate-400 dark:text-slate-600 transition-colors">Tell us what you're building</p>
               </div>
               {/* SECTION 1: Your Idea */}
               <div className="space-y-6">
                 {/* Idea Title */}
                 <div>
-                  <label className="block text-sm font-semibold mb-2 text-slate-200">
-                    Idea Title <span className="text-red-400">*</span>
+                  <label className="block text-sm font-semibold mb-2 text-slate-200 dark:text-slate-800 transition-colors">
+                    Idea Title <span className="text-red-400 dark:text-red-600">*</span>
                   </label>
                   <input
                     type="text"
@@ -270,7 +272,7 @@ Needs External Funding: ${formData.needs_funding}`;
                     value={formData.idea_title}
                     onChange={handleChange}
                     placeholder="e.g. AI-powered HR onboarding for Indian SMBs"
-                    className="w-full px-4 py-3 rounded-lg border border-slate-700/50 bg-slate-800/50 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all"
+                    className="w-full px-4 py-3 rounded-lg border border-slate-700/50 dark:border-slate-300/50 bg-slate-800/50 dark:bg-slate-100/50 text-white dark:text-slate-900 placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all"
                   />
                   {errors.idea_title && (
                     <p className="mt-2 text-sm text-red-400 flex items-center gap-1">
@@ -281,8 +283,8 @@ Needs External Funding: ${formData.needs_funding}`;
 
                 {/* Idea Description */}
                 <div>
-                  <label className="block text-sm font-semibold mb-2 text-slate-200">
-                    What's your idea? <span className="text-red-400">*</span>
+                  <label className="block text-sm font-semibold mb-2 text-slate-200 dark:text-slate-800 transition-colors">
+                    What's your idea? <span className="text-red-400 dark:text-red-600">*</span>
                   </label>
                   <textarea
                     name="idea_description"
@@ -290,7 +292,7 @@ Needs External Funding: ${formData.needs_funding}`;
                     onChange={handleChange}
                     rows={4}
                     placeholder="What does it do, who is it for, and how does it work?"
-                    className="w-full px-4 py-3 rounded-lg border border-slate-700/50 bg-slate-800/50 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all resize-none"
+                    className="w-full px-4 py-3 rounded-lg border border-slate-700/50 dark:border-slate-300/50 bg-slate-800/50 dark:bg-slate-100/50 text-white dark:text-slate-900 placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all resize-none"
                   />
                   {errors.idea_description && (
                     <p className="mt-2 text-sm text-red-400 flex items-center gap-1">
@@ -301,8 +303,8 @@ Needs External Funding: ${formData.needs_funding}`;
 
                 {/* Problem Statement */}
                 <div>
-                  <label className="block text-sm font-semibold mb-2 text-slate-200">
-                    What's the core problem? <span className="text-red-400">*</span>
+                  <label className="block text-sm font-semibold mb-2 text-slate-200 dark:text-slate-800 transition-colors">
+                    What's the core problem? <span className="text-red-400 dark:text-red-600">*</span>
                   </label>
                   <textarea
                     name="problem_statement"
@@ -310,7 +312,7 @@ Needs External Funding: ${formData.needs_funding}`;
                     onChange={handleChange}
                     rows={3}
                     placeholder="e.g. Doctors lose 30+ mins daily to manual OPD records. Wait times avg 45 mins."
-                    className="w-full px-4 py-3 rounded-lg border border-slate-700/50 bg-slate-800/50 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all resize-none"
+                    className="w-full px-4 py-3 rounded-lg border border-slate-700/50 dark:border-slate-300/50 bg-slate-800/50 dark:bg-slate-100/50 text-white dark:text-slate-900 placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all resize-none"
                   />
                   {errors.problem_statement && (
                     <p className="mt-2 text-sm text-red-400 flex items-center gap-1">
@@ -322,9 +324,9 @@ Needs External Funding: ${formData.needs_funding}`;
                 {/* Expertise Section */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
                   <div>
-                    <label className="block text-sm font-semibold mb-2 text-slate-200">
+                    <label className="block text-sm font-semibold mb-2 text-slate-200 dark:text-slate-800 transition-colors">
                       Your Domain Expertise
-                      <span className="text-slate-500 font-normal text-xs ml-1">(optional)</span>
+                      <span className="text-slate-500 dark:text-slate-400 font-normal text-xs ml-1 transition-colors">(optional)</span>
                     </label>
                     <input
                       type="text"
@@ -332,13 +334,13 @@ Needs External Funding: ${formData.needs_funding}`;
                       value={formData.domain_expertise}
                       onChange={handleChange}
                       placeholder="e.g. 1 year at a hospital"
-                      className="w-full px-4 py-3 rounded-lg border border-slate-700/50 bg-slate-800/50 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all"
+                      className="w-full px-4 py-3 rounded-lg border border-slate-700/50 dark:border-slate-300/50 bg-slate-800/50 dark:bg-slate-100/50 text-white dark:text-slate-900 placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold mb-2 text-slate-200">
+                    <label className="block text-sm font-semibold mb-2 text-slate-200 dark:text-slate-800 transition-colors">
                       Technical Skills
-                      <span className="text-slate-500 font-normal text-xs ml-1">(optional)</span>
+                      <span className="text-slate-500 dark:text-slate-400 font-normal text-xs ml-1 transition-colors">(optional)</span>
                     </label>
                     <input
                       type="text"
@@ -346,29 +348,29 @@ Needs External Funding: ${formData.needs_funding}`;
                       value={formData.technical_skills}
                       onChange={handleChange}
                       placeholder="e.g. Can code, built 2 projects"
-                      className="w-full px-4 py-3 rounded-lg border border-slate-700/50 bg-slate-800/50 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all"
+                      className="w-full px-4 py-3 rounded-lg border border-slate-700/50 dark:border-slate-300/50 bg-slate-800/50 dark:bg-slate-100/50 text-white dark:text-slate-900 placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all"
                     />
                   </div>
                 </div>
               </div>
 
               {/* Divider */}
-            <div className="h-px bg-gradient-to-r from-transparent via-slate-700/50 to-transparent"></div>
+            <div className="h-px bg-gradient-to-r from-transparent via-slate-700/50 dark:via-slate-300/50 to-transparent transition-colors"></div>
 
             {/* SECTION 2: Market Details */}
             <div className="space-y-6">
               <div>
-                <h3 className="text-lg font-semibold text-white mb-1 flex items-center gap-2">
+                <h3 className="text-lg font-semibold text-white dark:text-slate-900 mb-1 flex items-center gap-2 transition-colors">
                   <Target size={20} className="text-cyan-400" />
                   Market Details
                 </h3>
-                <p className="text-sm text-slate-400">Who you're building for and why</p>
+                <p className="text-sm text-slate-400 dark:text-slate-600 transition-colors">Who you're building for and why</p>
               </div>
 
               {/* Target User */}
               <div>
-                <label className="block text-sm font-semibold mb-2 text-slate-200">
-                  Target User Profile <span className="text-red-400">*</span>
+                <label className="block text-sm font-semibold mb-2 text-slate-200 dark:text-slate-800 transition-colors">
+                  Target User Profile <span className="text-red-400 dark:text-red-600">*</span>
                 </label>
                 <input
                   type="text"
@@ -376,7 +378,7 @@ Needs External Funding: ${formData.needs_funding}`;
                   value={formData.target_user}
                   onChange={handleChange}
                   placeholder="e.g. HR managers at 50–500 employee companies"
-                  className="w-full px-4 py-3 rounded-lg border border-slate-700/50 bg-slate-800/50 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all"
+                  className="w-full px-4 py-3 rounded-lg border border-slate-700/50 dark:border-slate-300/50 bg-slate-800/50 dark:bg-slate-100/50 text-white dark:text-slate-900 placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all"
                 />
                 {errors.target_user && (
                   <p className="mt-2 text-sm text-red-400 flex items-center gap-1">
@@ -387,9 +389,9 @@ Needs External Funding: ${formData.needs_funding}`;
 
               {/* India Market Context */}
               <div>
-                <label className="block text-sm font-semibold mb-2 text-slate-200">
+                <label className="block text-sm font-semibold mb-2 text-slate-200 dark:text-slate-800 transition-colors">
                   India Market Context
-                  <span className="text-slate-500 font-normal text-xs ml-1">(optional)</span>
+                  <span className="text-slate-500 dark:text-slate-400 font-normal text-xs ml-1 transition-colors">(optional)</span>
                 </label>
                 <textarea
                   name="india_market_context"
@@ -397,20 +399,20 @@ Needs External Funding: ${formData.needs_funding}`;
                   onChange={handleChange}
                   rows={3}
                   placeholder="Pricing, regulations, distribution, local behavior..."
-                  className="w-full px-4 py-3 rounded-lg border border-slate-700/50 bg-slate-800/50 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all resize-none"
+                  className="w-full px-4 py-3 rounded-lg border border-slate-700/50 dark:border-slate-300/50 bg-slate-800/50 dark:bg-slate-100/50 text-white dark:text-slate-900 placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all resize-none"
                 />
               </div>
 
               {/* Revenue Timeline */}
               <div>
-                <label className="block text-sm font-semibold mb-2 text-slate-200">
-                  When do you expect first revenue? <span className="text-red-400">*</span>
+                <label className="block text-sm font-semibold mb-2 text-slate-200 dark:text-slate-800 transition-colors">
+                  When do you expect first revenue? <span className="text-red-400 dark:text-red-600">*</span>
                 </label>
                 <select
                   name="expects_revenue"
                   value={formData.expects_revenue}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-lg border border-slate-700/50 bg-slate-800/50 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all"
+                  className="w-full px-4 py-3 rounded-lg border border-slate-700/50 dark:border-slate-300/50 bg-slate-800/50 dark:bg-slate-100/50 text-white dark:text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all"
                 >
                   <option value="day_1">Day 1 (transactional)</option>
                   <option value="3_6mo">3–6 months</option>
@@ -421,36 +423,36 @@ Needs External Funding: ${formData.needs_funding}`;
             </div>
 
             {/* Divider */}
-            <div className="h-px bg-gradient-to-r from-transparent via-slate-700/50 to-transparent"></div>
+            <div className="h-px bg-gradient-to-r from-transparent via-slate-700/50 dark:via-slate-300/50 to-transparent transition-colors"></div>
 
             {/* SECTION 3: Competitive Landscape */}
             <div className="space-y-6">
               <div>
-                <h3 className="text-lg font-semibold text-white mb-1 flex items-center gap-2">
+                <h3 className="text-lg font-semibold text-white dark:text-slate-900 mb-1 flex items-center gap-2 transition-colors">
                   <TrendingUp size={20} className="text-cyan-400" />
                   Your Competitive Edge
                 </h3>
-                <p className="text-sm text-slate-400">What sets you apart?</p>
+                <p className="text-sm text-slate-400 dark:text-slate-600 transition-colors">What sets you apart?</p>
               </div>
 
               {/* Competitors Checkbox */}
-              <div className="flex items-center p-4 rounded-lg bg-slate-800/30 border border-slate-700/30 hover:border-slate-700/50 transition-colors cursor-pointer" onClick={() => setFormData(prev => ({ ...prev, knows_competitors: !prev.knows_competitors }))}>
+              <div className="flex items-center p-4 rounded-lg bg-slate-800/30 dark:bg-slate-200/30 border border-slate-700/30 dark:border-slate-300/30 hover:border-slate-700/50 dark:hover:border-slate-300/50 transition-colors cursor-pointer" onClick={() => setFormData(prev => ({ ...prev, knows_competitors: !prev.knows_competitors }))}>
                 <input
                   type="checkbox"
                   id="knows_competitors"
                   name="knows_competitors"
                   checked={formData.knows_competitors}
                   onChange={handleChange}
-                  className="w-5 h-5 rounded border-slate-600 bg-slate-700 text-cyan-500 focus:ring-cyan-500 cursor-pointer"
+                  className="w-5 h-5 rounded border-slate-600 dark:border-slate-400 bg-slate-700 dark:bg-slate-300 text-cyan-500 focus:ring-cyan-500 cursor-pointer transition-colors"
                 />
-                <label htmlFor="knows_competitors" className="ml-3 block font-medium text-slate-200 cursor-pointer flex-1">
+                <label htmlFor="knows_competitors" className="ml-3 block font-medium text-slate-200 dark:text-slate-800 cursor-pointer flex-1 transition-colors">
                   I know my direct competitors
                 </label>
               </div>
 
               {formData.knows_competitors && (
                 <div className="pl-4">
-                  <label className="block text-sm font-semibold mb-2 text-slate-200">
+                  <label className="block text-sm font-semibold mb-2 text-slate-200 dark:text-slate-800 transition-colors">
                     Name your competitors
                   </label>
                   <textarea
@@ -459,7 +461,7 @@ Needs External Funding: ${formData.needs_funding}`;
                     onChange={handleChange}
                     rows={2}
                     placeholder="e.g. Keka, Darwinbox, Zoho People"
-                    className="w-full px-4 py-3 rounded-lg border border-slate-700/50 bg-slate-800/50 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all resize-none"
+                    className="w-full px-4 py-3 rounded-lg border border-slate-700/50 dark:border-slate-300/50 bg-slate-800/50 dark:bg-slate-100/50 text-white dark:text-slate-900 placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all resize-none"
                   />
                   {errors.named_competitors && (
                     <p className="mt-2 text-sm text-red-400 flex items-center gap-1">
@@ -471,28 +473,28 @@ Needs External Funding: ${formData.needs_funding}`;
             </div>
 
             {/* Divider */}
-            <div className="h-px bg-gradient-to-r from-transparent via-slate-700/50 to-transparent"></div>
+            <div className="h-px bg-gradient-to-r from-transparent via-slate-700/50 dark:via-slate-300/50 to-transparent transition-colors"></div>
 
             {/* SECTION 4: Team & Funding */}
             <div className="space-y-6">
               <div>
-                <h3 className="text-lg font-semibold text-white mb-1 flex items-center gap-2">
+                <h3 className="text-lg font-semibold text-white dark:text-slate-900 mb-1 flex items-center gap-2 transition-colors">
                   <Users size={20} className="text-cyan-400" />
                   Team & Resources
                 </h3>
-                <p className="text-sm text-slate-400">Who's building this and what's needed</p>
+                <p className="text-sm text-slate-400 dark:text-slate-600 transition-colors">Who's building this and what's needed</p>
               </div>
 
               {/* Team Size */}
               <div>
-                <label className="block text-sm font-semibold mb-2 text-slate-200">
-                  Team Size <span className="text-red-400">*</span>
+                <label className="block text-sm font-semibold mb-2 text-slate-200 dark:text-slate-800 transition-colors">
+                  Team Size <span className="text-red-400 dark:text-red-600">*</span>
                 </label>
                 <select
                   name="team_size"
                   value={formData.team_size}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-lg border border-slate-700/50 bg-slate-800/50 text-white focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all"
+                  className="w-full px-4 py-3 rounded-lg border border-slate-700/50 dark:border-slate-300/50 bg-slate-800/50 dark:bg-slate-100/50 text-white dark:text-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all"
                 >
                   <option value="Solo">Solo</option>
                   <option value="2">2</option>
@@ -502,16 +504,16 @@ Needs External Funding: ${formData.needs_funding}`;
               </div>
 
               {/* Funding Checkbox */}
-              <div className="flex items-center p-4 rounded-lg bg-slate-800/30 border border-slate-700/30 hover:border-slate-700/50 transition-colors cursor-pointer" onClick={() => setFormData(prev => ({ ...prev, needs_funding: !prev.needs_funding }))}>
+              <div className="flex items-center p-4 rounded-lg bg-slate-800/30 dark:bg-slate-200/30 border border-slate-700/30 dark:border-slate-300/30 hover:border-slate-700/50 dark:hover:border-slate-300/50 transition-colors cursor-pointer" onClick={() => setFormData(prev => ({ ...prev, needs_funding: !prev.needs_funding }))}>
                 <input
                   type="checkbox"
                   id="needs_funding"
                   name="needs_funding"
                   checked={formData.needs_funding}
                   onChange={handleChange}
-                  className="w-5 h-5 rounded border-slate-600 bg-slate-700 text-cyan-500 focus:ring-cyan-500 cursor-pointer"
+                  className="w-5 h-5 rounded border-slate-600 dark:border-slate-400 bg-slate-700 dark:bg-slate-300 text-cyan-500 focus:ring-cyan-500 cursor-pointer transition-colors"
                 />
-                <label htmlFor="needs_funding" className="ml-3 block font-medium text-slate-200 cursor-pointer flex-1">
+                <label htmlFor="needs_funding" className="ml-3 block font-medium text-slate-200 dark:text-slate-800 cursor-pointer flex-1 transition-colors">
                   Need external funding to launch
                 </label>
               </div>
@@ -519,9 +521,9 @@ Needs External Funding: ${formData.needs_funding}`;
 
             {/* Error Message */}
             {apiError && (
-              <div className="p-4 rounded-lg bg-red-950/50 border border-red-800/50 flex items-start gap-3">
-                <AlertCircle size={20} className="text-red-400 flex-shrink-0 mt-0.5" />
-                <p className="text-sm text-red-300">{apiError}</p>
+              <div className="p-4 rounded-lg bg-red-950/50 dark:bg-red-100/50 border border-red-800/50 dark:border-red-300/50 flex items-start gap-3 transition-colors">
+                <AlertCircle size={20} className="text-red-400 dark:text-red-600 flex-shrink-0 mt-0.5" />
+                <p className="text-sm text-red-300 dark:text-red-700 transition-colors">{apiError}</p>
               </div>
             )}
 
@@ -530,7 +532,7 @@ Needs External Funding: ${formData.needs_funding}`;
               <button
                 type="submit"
                 disabled={isLoading}
-                className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 px-6 py-4 text-base font-semibold text-white transition-all hover:shadow-lg hover:shadow-cyan-500/30 disabled:opacity-70 disabled:cursor-not-allowed"
+                className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 px-6 py-4 text-base font-semibold text-white transition-all hover:shadow-lg hover:shadow-cyan-500/30 dark:shadow-cyan-500/20 disabled:opacity-70 disabled:cursor-not-allowed"
               >
                 {isLoading ? (
                   <>
@@ -553,11 +555,10 @@ Needs External Funding: ${formData.needs_funding}`;
         </div>
 
         {/* Footer */}
-        <div className="mt-16 text-center text-sm text-slate-500 pb-8">
+        <div className="mt-16 text-center text-sm text-slate-500 dark:text-slate-400 pb-8 transition-colors">
           <p>Your ideas are evaluated with IVSM (Idea Viability Scoring Model) powered by AI</p>
         </div>
       </main>
     </div>
   )
 }
-
