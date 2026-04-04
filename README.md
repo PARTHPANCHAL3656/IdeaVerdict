@@ -272,24 +272,38 @@ IdeaVerdict/
 
 ```json
 {
+  "idea_slug": "ai-whatsapp-tutor-tier2-tier3-india",
   "verdict": "Pivot It",
-  "total_score": 41,
-  "idea_slug": "hospital-saas-tier2-india",
+  "total_score": 49,
   "scores": {
-    "problem_clarity": 8,
-    "target_user_fit": 7,
-    "india_market_fit": 7,
-    "competition_differentiation": 5,
-    "domain_expertise_required": 6,
-    "first_revenue_likelihood": 8
+    "problem_clarity": 9,
+    "target_user_fit": 9,
+    "india_market_fit": 9,
+    "first_revenue_likelihood": 7,
+    "domain_expertise_required": 8,
+    "competition_differentiation": 7
   },
   "why_this_will_fail": [
-    "Hospital procurement cycles in India average 9–14 months...",
-    "Existing players like Practo and eVitalRx already have...",
-    "The sales motion requires physical presence in each city..."
+    "Parents in India prioritize trust and proven outcomes over accessibility; an AI-only tutor may struggle to compete with human tutors and established edtech platforms.",
+    "Ensuring consistently accurate, syllabus-aligned explanations across CBSE, state boards, and multiple languages is a complex and resource-heavy challenge for a small team.",
+    "Generic AI APIs may produce shallow or incorrect explanations, which can directly impact learning outcomes and user trust.",
+    "WhatsApp lacks built-in mechanisms for long-term engagement such as structured curriculum tracking, accountability, and peer learning.",
+    "Sustaining student motivation over months requires mentorship, personalization, and feedback loops beyond simple Q&A interactions."
   ],
-  "confidence_score": 75,
-  "competitor_confidence": "medium"
+  "validate_this_first": [
+    "Can the AI consistently provide accurate, step-by-step explanations for Math and Science problems in Hinglish or regional languages?",
+    "Will parents trust and pay for an AI tutor delivered via WhatsApp for exam preparation?",
+    "Can meaningful learning outcomes be achieved without structured curriculum delivery or live mentorship?"
+  ],
+  "confidence_score": 85,
+  "competitor_confidence": "medium",
+  "analysis_metadata": {
+    "market": "India",
+    "target_segment": "Tier 2/3 students",
+    "use_case": "Exam preparation support",
+    "platform": "WhatsApp-first",
+    "analysis_date": "2026-04-04"
+  }
 }
 ```
 
