@@ -11,7 +11,7 @@ export default function Auth() {
   const [error, setError] = useState(null)
   const navigate = useNavigate()
 
-  // ✅ EMAIL/PASSWORD AUTH
+  // EMAIL/PASSWORD AUTH
   const handleAuth = async () => {
     setLoading(true)
     setError(null)
@@ -43,7 +43,7 @@ export default function Auth() {
     }
   }
 
-  // ✅ GOOGLE AUTH (NEW)
+  // GOOGLE AUTH (NEW)
   const handleGoogleLogin = async () => {
     setError(null)
 
