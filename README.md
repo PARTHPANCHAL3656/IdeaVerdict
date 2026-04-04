@@ -151,26 +151,24 @@ GEMINI_API_KEY=your_google_ai_studio_key
 ## 📁 Project Structure
 
 ```
-ideaverdict/
+idea-verdict/
 ├── src/
 │   ├── pages/
-│   │   ├── Landing.jsx       # Public landing page
-│   │   ├── Auth.jsx          # Signup / signin
-│   │   ├── Dashboard.jsx     # Idea input form + submit
-│   │   ├── Results.jsx       # IVSM verdict display
-│   │   └── History.jsx       # Past analyses per user
+│   │   ├── Landing.jsx       # Public marketing page
+│   │   ├── Auth.jsx          # Email + Google + LinkedIn auth
+│   │   ├── Dashboard.jsx     # Idea intake form + AI submission
+│   │   ├── Results.jsx       # Full IVSM verdict display + PDF
+│   │   └── History.jsx       # Past analyses library + PDF
 │   ├── components/
-│   │   ├── VerdictBadge.jsx  # Color-coded verdict chip
-│   │   ├── ScoreBar.jsx      # Per-factor score visualiser
-│   │   ├── FailureCard.jsx   # Why This Will Fail section
-│   │   └── ConfidenceMeter.jsx
+│   │   ├── AuthGuard.jsx     # Protected route wrapper
+│   │   └── SwapForm.jsx      # Animated auth form component
 │   └── lib/
-│       └── supabase.js       # Supabase client init
-├── supabase/
-│   └── functions/
-│       └── analyze/
-│           └── index.ts      # Edge Function — AI proxy
-├── schema.sql                # Full DB schema + RLS policies
+│       ├── supabase.js       # Supabase client
+│       └── utils.js          # cn() helper
+├── index.html
+├── tailwind.config.js
+├── vite.config.js
+├── components.json           # shadcn/ui config
 ├── CONTEXT.md                # AI coding tool handoff file
 └── README.md
 ```

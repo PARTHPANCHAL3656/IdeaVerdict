@@ -11,7 +11,7 @@ export default function Auth() {
   const [error, setError] = useState(null)
   const navigate = useNavigate()
 
-  // EMAIL/PASSWORD AUTH
+  // ✅ EMAIL/PASSWORD AUTH
   const handleAuth = async () => {
     setLoading(true)
     setError(null)
@@ -43,14 +43,14 @@ export default function Auth() {
     }
   }
 
-  // GOOGLE AUTH (NEW)
+  // ✅ GOOGLE AUTH (NEW)
   const handleGoogleLogin = async () => {
     setError(null)
 
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: 'http://localhost:5173/dashboard',
+              redirectTo: window.location.origin + '/dashboard',
       },
     })
 
@@ -65,9 +65,9 @@ export default function Auth() {
     setError(null)
 
     const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'linkedin',
+      provider: 'linkedin_oidc',
       options: {
-        redirectTo: 'http://localhost:5173/dashboard',
+              redirectTo: window.location.origin + '/dashboard',
       },
     })
 
