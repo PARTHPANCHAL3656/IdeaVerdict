@@ -180,19 +180,19 @@ export default function Results() {
 
       <main className="flex flex-col items-center flex-1 space-y-6 mt-8">
         <div className="text-center">
-          <h2 className="text-3xl font-extrabold tracking-tight text-slate-100">
+          <h2 className="text-3xl font-extrabold tracking-tight text-slate-100 dark:text-slate-900 transition-colors">
             {analysis.idea_title}
           </h2>
-          <p className="text-slate-400 max-w-lg mt-2 mx-auto">
+          <p className="text-slate-400 dark:text-slate-500 max-w-lg mt-2 mx-auto transition-colors">
              Analyzed on {new Date(analysis.scored_at).toLocaleDateString()}
           </p>
         </div>
 
-        <div className="w-full max-w-2xl text-left bg-slate-900 border border-slate-800 rounded-xl p-8 shadow-xl mt-8 space-y-10 relative">
+        <div className="w-full max-w-2xl text-left bg-slate-900 dark:bg-slate-100 border border-slate-800 dark:border-slate-300 rounded-xl p-8 shadow-xl mt-8 space-y-10 relative transition-colors">
           
           <button 
             onClick={handleDownloadPDF}
-            className="absolute top-4 right-4 text-slate-400 hover:text-white flex items-center gap-1.5 text-xs font-semibold bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded transition-colors shadow-sm"
+            className="absolute top-4 right-4 text-slate-400 dark:text-slate-600 hover:text-white dark:hover:text-slate-900 flex items-center gap-1.5 text-xs font-semibold bg-slate-800 dark:bg-slate-200 hover:bg-slate-700 dark:hover:bg-slate-300 px-3 py-1.5 rounded transition-colors shadow-sm"
             title="Download Report as PDF"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
@@ -211,16 +211,16 @@ export default function Results() {
 
           {/* SCORE BREAKDOWN */}
           <div>
-            <h3 className="text-lg font-bold mb-5 tracking-tight text-white border-b border-slate-800 pb-2">Score Breakdown</h3>
+            <h3 className="text-lg font-bold mb-5 tracking-tight text-white dark:text-slate-900 border-b border-slate-800 dark:border-slate-300 pb-2 transition-colors">Score Breakdown</h3>
             <div className="space-y-5">
               {Object.entries(result.scores || {}).map(([key, score]) => (
                 <div key={key}>
                   <div className="flex justify-between text-sm mb-2">
-                    <span className="text-slate-300 font-medium">{factorLabels[key] || key}</span>
-                    <span className="text-slate-400 font-mono font-medium">{score}/10</span>
+                    <span className="text-slate-300 dark:text-slate-700 font-medium transition-colors">{factorLabels[key] || key}</span>
+                    <span className="text-slate-400 dark:text-slate-600 font-mono font-medium transition-colors">{score}/10</span>
                   </div>
-                  <div className="w-full bg-slate-800 rounded-full h-2 break-inside-avoid">
-                    <div className="bg-slate-400 h-2 rounded-full" style={{ width: `${(score / 10) * 100}%` }}></div>
+                  <div className="w-full bg-slate-800 dark:bg-slate-300 rounded-full h-2 break-inside-avoid transition-colors">
+                    <div className="bg-slate-400 dark:bg-slate-600 h-2 rounded-full transition-colors" style={{ width: `${(score / 10) * 100}%` }}></div>
                   </div>
                 </div>
               ))}
@@ -230,10 +230,10 @@ export default function Results() {
           {/* WHY THIS WILL FAIL */}
           {(result.why_this_will_fail && result.why_this_will_fail.length > 0) && (
             <div>
-              <h3 className="text-lg font-bold mb-4 tracking-tight text-white border-b border-slate-800 pb-2">Why This Will Fail</h3>
+              <h3 className="text-lg font-bold mb-4 tracking-tight text-white dark:text-slate-900 border-b border-slate-800 dark:border-slate-300 pb-2 transition-colors">Why This Will Fail</h3>
               <div className="space-y-3">
                 {result.why_this_will_fail.map((reason, idx) => (
-                  <div key={idx} className="p-4 rounded-lg bg-slate-950 border border-slate-800 text-slate-300 text-sm leading-relaxed">
+                  <div key={idx} className="p-4 rounded-lg bg-slate-950 dark:bg-slate-200 border border-slate-800 dark:border-slate-300 text-slate-300 dark:text-slate-700 text-sm leading-relaxed transition-colors">
                     {reason}
                   </div>
                 ))}
@@ -244,8 +244,8 @@ export default function Results() {
           {/* ONE THING TO VALIDATE FIRST */}
           {result.one_thing_to_validate_first && (
             <div>
-              <h3 className="text-lg font-bold mb-4 tracking-tight text-white border-b border-slate-800 pb-2">Validate This First</h3>
-              <div className="p-5 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-200 text-base font-medium leading-relaxed shadow-inner">
+              <h3 className="text-lg font-bold mb-4 tracking-tight text-white dark:text-slate-900 border-b border-slate-800 dark:border-slate-300 pb-2 transition-colors">Validate This First</h3>
+              <div className="p-5 rounded-lg bg-indigo-500/10 dark:bg-indigo-100/50 border border-indigo-500/20 dark:border-indigo-300/30 text-indigo-200 dark:text-indigo-900 text-base font-medium leading-relaxed shadow-inner transition-colors">
                 {result.one_thing_to_validate_first}
               </div>
             </div>
@@ -253,16 +253,16 @@ export default function Results() {
 
           {/* CONFIDENCE METER */}
           <div>
-            <h3 className="text-lg font-bold mb-5 tracking-tight text-white border-b border-slate-800 pb-2">Analysis Confidence: {result.confidence}%</h3>
+            <h3 className="text-lg font-bold mb-5 tracking-tight text-white dark:text-slate-900 border-b border-slate-800 dark:border-slate-300 pb-2 transition-colors">Analysis Confidence: {result.confidence}%</h3>
             <div className="mb-5">
-              <div className="w-full bg-slate-800 rounded-full h-2">
+              <div className="w-full bg-slate-800 dark:bg-slate-300 rounded-full h-2 transition-colors">
                 <div className={`h-2 rounded-full ${result.confidence >= 70 ? 'bg-green-500' : result.confidence >= 40 ? 'bg-amber-500' : 'bg-red-500'}`} style={{ width: `${result.confidence}%` }}></div>
               </div>
             </div>
 
             <div className="flex flex-wrap gap-2">
               {Object.entries(result.confidence_breakdown || {}).map(([key, isTrue]) => (
-                <span key={key} className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ${isTrue ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-slate-800 text-slate-500 border-slate-700'}`}>
+                <span key={key} className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border transition-colors ${isTrue ? 'bg-green-500/10 dark:bg-green-100/50 text-green-400 dark:text-green-700 border-green-500/20 dark:border-green-300/30' : 'bg-slate-800 dark:bg-slate-300 text-slate-500 dark:text-slate-600 border-slate-700 dark:border-slate-400'}`}>
                   {confidenceLabels[key] || key}
                 </span>
               ))}
@@ -271,7 +271,7 @@ export default function Results() {
 
           <Link
             to="/dashboard"
-            className="w-full flex items-center justify-center rounded-md bg-transparent border border-slate-700 px-4 py-3 text-sm font-bold text-slate-300 transition-colors hover:bg-slate-800 hover:text-white mt-8 focus:outline-none focus:ring-2 focus:ring-slate-500"
+            className="w-full flex items-center justify-center rounded-md bg-transparent border border-slate-700 dark:border-slate-300 px-4 py-3 text-sm font-bold text-slate-300 dark:text-slate-700 transition-colors hover:bg-slate-800 dark:hover:bg-slate-200 hover:text-white dark:hover:text-slate-900 mt-8 focus:outline-none focus:ring-2 focus:ring-slate-500 dark:focus:ring-slate-400"
           >
             ANALYSE ANOTHER IDEA
           </Link>
