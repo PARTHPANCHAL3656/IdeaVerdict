@@ -151,25 +151,54 @@ GEMINI_API_KEY=your_google_ai_studio_key
 ## 📁 Project Structure
 
 ```
-idea-verdict/
-├── src/
-│   ├── pages/
-│   │   ├── Landing.jsx       # Public marketing page
-│   │   ├── Auth.jsx          # Email + Google + LinkedIn auth
-│   │   ├── Dashboard.jsx     # Idea intake form + AI submission
-│   │   ├── Results.jsx       # Full IVSM verdict display + PDF
-│   │   └── History.jsx       # Past analyses library + PDF
-│   ├── components/
-│   │   ├── AuthGuard.jsx     # Protected route wrapper
-│   │   └── SwapForm.jsx      # Animated auth form component
-│   └── lib/
-│       ├── supabase.js       # Supabase client
-│       └── utils.js          # cn() helper
-├── index.html
+IdeaVerdict/
+│
+├── api/                         # Serverless backend (Vercel functions)
+│   └── analyze.js              # Core AI analysis endpoint
+│
+├── src/                        # Frontend source code
+│   │
+│   ├── components/             # Reusable UI components
+│   │   ├── AuthGuard.jsx
+│   │   ├── SwapForm.jsx
+│   │   ├── SwitchMode.jsx
+│   │   └── ThemeContext.jsx
+│   │
+│   ├── lib/                    # Utility & external integrations
+│   │   ├── supabase.js
+│   │   └── utils.js
+│   │
+│   ├── pages/                  # Page-level components (routing views)
+│   │   ├── Landing.jsx
+│   │   ├── Results.jsx
+│   │   ├── Dashboard.jsx
+│   │   ├── History.jsx
+│   │   └── Auth.jsx
+│   │
+│   ├── App.jsx                 # Root React component
+│   ├── main.jsx                # App entry point
+│   └── index.css               # Global styles
+│
+├── public/                     # Static assets (if used)
+│
+├── dist/                       # Production build (auto-generated)
+├── node_modules/               # Dependencies (ignored)
+│
+├── .env.local                  # Environment variables (DO NOT COMMIT)
+├── .gitignore
+│
+├── components.json             # UI config (likely shadcn/ui)
+├── CONTEXT.md                  # Project context / AI prompts
+│
+├── index.html                  # Vite entry HTML
+├── package.json
+├── package-lock.json
+│
+├── postcss.config.js
 ├── tailwind.config.js
 ├── vite.config.js
-├── components.json           # shadcn/ui config
-├── CONTEXT.md                # AI coding tool handoff file
+│
+├── vercel.json                 # Deployment config
 └── README.md
 ```
 
