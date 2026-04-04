@@ -260,13 +260,17 @@ Needs External Funding: ${formData.needs_funding}`;
           <h2 className="text-5xl font-bold tracking-tight mb-4 bg-gradient-to-r from-slate-100 dark:from-slate-950 to-slate-400 dark:to-slate-700 bg-clip-text text-transparent">
             Validate Your Idea
           </h2>
-          <p className="text-lg text-slate-400 dark:text-slate-600 max-w-2xl mx-auto leading-relaxed">
-            <p> Get brutally honest AI-powered feedback on your startup idea. </p>
-            Discover if it's a  
-            <span className="text-cyan-400 dark:text-cyan-600">Build It</span>, 
-            <span className="text-yellow-400 dark:text-yellow-600">Pivot It</span>, 
-            <span className="text-orange-400 dark:text-orange-600">Drop It</span>, or a 
-            <span className="text-green-400 dark:text-green-600">Sleeper Hit</span>.
+          <p className="text-lg text-slate-400 dark:text-slate-600 max-w-2xl mx-auto leading-relaxed space-y-2 text-center">
+            <span className="block">
+              Get brutally honest AI-powered feedback on your startup idea.
+            </span>
+            <span className="block">
+              Discover if it's a{" "}
+              <span className="text-cyan-400 dark:text-cyan-600">Build It</span>,{" "}
+              <span className="text-yellow-400 dark:text-yellow-600">Pivot It</span>,{" "}
+              <span className="text-orange-400 dark:text-orange-600">Drop It</span>, or a{" "}
+              <span className="text-green-400 dark:text-green-600">Sleeper Hit</span>.
+            </span>
           </p>
         </div>
 
