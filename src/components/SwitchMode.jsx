@@ -14,7 +14,7 @@ export function SwitchMode() {
     >
       {/* Moon Icon - Left */}
       <div className="relative z-10 flex items-center justify-center w-7 h-7 ml-0.5">
-        <Moon size={16} className="text-slate-400 dark:text-cyan-300" />
+        <Moon size={16} className="text-slate-400 dark:text-cyan-500" />
       </div>
 
       {/* Slider Circle */}
