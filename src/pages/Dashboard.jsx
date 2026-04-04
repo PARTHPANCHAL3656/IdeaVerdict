@@ -131,43 +131,35 @@ Needs External Funding: ${formData.needs_funding}`;
       let parsedResult = null;
 
       try {
-        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        const response = await fetch('/api/analyze', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            model: 'llama-3.3-70b-versatile',
-            response_format: { type: "json_object" },
             messages: [
               { role: 'system', content: systemPrompt },
               { role: 'user', content: userMessage }
             ]
           })
-        });
+        })
+          if (!response.ok) {
+            const errText = await response.text()
+            throw new Error(`Gemini API Error: ${response.status} - ${errText}`)
+          }
 
-        if (!response.ok) {
-          const errText = await response.text();
-          throw new Error(`Groq API Error: ${response.status} - ${errText}`);
+          const rawData = await response.json()
+          const contentStr = rawData.choices?.[0]?.message?.content
+
+          if (contentStr) {
+            let cleaned = contentStr.trim()
+            if (cleaned.startsWith('```json')) cleaned = cleaned.slice(7)
+            if (cleaned.startsWith('```')) cleaned = cleaned.slice(3)
+            if (cleaned.endsWith('```')) cleaned = cleaned.slice(0, -3)
+            parsedResult = JSON.parse(cleaned.trim())
+          }
+        } catch (apiError) {
+          console.error('Gemini API error:', apiError)
+          throw apiError
         }
-
-        const rawData = await response.json();
-        const contentStr = rawData.choices?.[0]?.message?.content;
-
-        if (contentStr) {
-          let cleanedJsonStr = contentStr.trim();
-          if (cleanedJsonStr.startsWith('```json')) cleanedJsonStr = cleanedJsonStr.slice(7);
-          if (cleanedJsonStr.startsWith('```')) cleanedJsonStr = cleanedJsonStr.slice(3);
-          if (cleanedJsonStr.endsWith('```')) cleanedJsonStr = cleanedJsonStr.slice(0, -3);
-          cleanedJsonStr = cleanedJsonStr.trim();
-
-          parsedResult = JSON.parse(cleanedJsonStr);
-        }
-      } catch (apiError) {
-        console.error("Groq API error:", apiError);
-        throw apiError;
-      }
 
       if (!parsedResult) throw new Error('Analysis generation failed. Please try again.');
 
