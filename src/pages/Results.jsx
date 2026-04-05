@@ -134,61 +134,76 @@ export default function Results() {
 
     const container = document.createElement('div');
     container.innerHTML = `
-      <div style="padding: 40px; font-family: sans-serif; color: #1e293b; background: white;">
-        <h1 style="font-size: 28px; font-weight: bold; margin-bottom: 10px; color: #0f172a;">IdeaVerdict Report</h1>
-        <h2 style="font-size: 20px; color: #334155; margin-bottom: 30px;">${item.idea_title}</h2>
+      <div style="padding: 30px; font-family: Arial, sans-serif; color: #1e293b; background: white; line-height: 1.6;">
+        <style>
+          table { page-break-inside: avoid; width: 100%; }
+          h3 { page-break-inside: avoid; page-break-after: avoid; margin-top: 20px; }
+          .section-box { page-break-inside: avoid; margin-bottom: 20px; }
+          .verdict-box { page-break-inside: avoid; page-break-after: avoid; }
+          ul, ol { page-break-inside: avoid; }
+          li { margin-bottom: 8px; page-break-inside: avoid; }
+        </style>
         
-        <div style="padding: 20px; background-color: #f8fafc; border: 2px solid ${getVerdictHTMLColor(item.result.verdict)}; border-radius: 8px; margin-bottom: 30px; text-align: center;">
-          <div style="font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: #64748b; margin-bottom: 5px;">Verdict</div>
-          <div style="font-size: 32px; font-weight: 900; color: ${getVerdictHTMLColor(item.result.verdict)}; margin-bottom: 5px;">${item.result.verdict}</div>
-          <div style="font-size: 16px; font-weight: bold; color: #475569;">Score: ${item.total_score} / 60</div>
+        <h1 style="font-size: 26px; font-weight: bold; margin-bottom: 8px; color: #0f172a;">IdeaVerdict Report</h1>
+        <h2 style="font-size: 18px; color: #334155; margin-bottom: 25px; font-weight: 600;">${item.idea_title}</h2>
+        
+        <div class="verdict-box" style="padding: 18px; background-color: #f8fafc; border: 2px solid ${getVerdictHTMLColor(item.result.verdict)}; border-radius: 8px; margin-bottom: 25px; text-align: center;">
+          <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #64748b; margin-bottom: 5px; font-weight: bold;">Verdict</div>
+          <div style="font-size: 28px; font-weight: 900; color: ${getVerdictHTMLColor(item.result.verdict)}; margin-bottom: 5px;">${item.result.verdict}</div>
+          <div style="font-size: 14px; font-weight: bold; color: #475569;">Score: ${item.total_score} / 60</div>
         </div>
 
-        <h3 style="font-size: 18px; font-weight: bold; color: #0f172a; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">Score Breakdown</h3>
-        <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
-          <tbody>
-            ${Object.entries(item.result.scores || {}).map(([key, score]) => `
-              <tr>
-                <td style="padding: 8px 0; border-bottom: 1px solid #f1f5f9; color: #475569;">${key.replace(/_/g, ' ').toUpperCase()}</td>
-                <td style="padding: 8px 0; border-bottom: 1px solid #f1f5f9; font-weight: bold; text-align: right; color: #0f172a;">${score}/10</td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
+        <div class="section-box">
+          <h3 style="font-size: 16px; font-weight: bold; color: #0f172a; margin-bottom: 12px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">Score Breakdown</h3>
+          <table style="border-collapse: collapse;">
+            <tbody>
+              ${Object.entries(item.result.scores || {}).map(([key, score]) => `
+                <tr>
+                  <td style="padding: 8px 0; border-bottom: 1px solid #f1f5f9; color: #475569; font-size: 13px;">${key.replace(/_/g, ' ').toUpperCase()}</td>
+                  <td style="padding: 8px 0; border-bottom: 1px solid #f1f5f9; font-weight: bold; text-align: right; color: #0f172a; font-size: 13px;">${score}/10</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
 
         <!-- RISK HEATMAP SECTION -->
-        <h3 style="font-size: 18px; font-weight: bold; color: #0f172a; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">🚨 Risk Heatmap: Your Weakness Areas</h3>
-        <div style="margin-bottom: 30px;">
-          ${weaknesses.map(weakness => `
-            <div style="margin-bottom: 12px; padding: 12px; background: #fee2e2; border-left: 4px solid #dc2626; border-radius: 4px;">
-              <div style="font-weight: bold; color: #b91c1c; margin-bottom: 6px;">${weakness.label} — ${weakness.score}/10</div>
-              <div style="font-size: 12px; color: #991b1b; font-style: italic;">
-                ${weakness.score <= 3 ? '⛔ CRITICAL — Fix this immediately' : weakness.score <= 6 ? '⚠️ MODERATE — Will impact your verdict' : '⚠ LOW — Nice to optimize'}
+        <div class="section-box">
+          <h3 style="font-size: 16px; font-weight: bold; color: #0f172a; margin-bottom: 12px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">🚨 Risk Heatmap: Your Weakness Areas</h3>
+          <div>
+            ${weaknesses.map(weakness => `
+              <div class="section-box" style="margin-bottom: 10px; padding: 10px; background: #fee2e2; border-left: 4px solid #dc2626; border-radius: 4px; page-break-inside: avoid;">
+                <div style="font-weight: bold; color: #b91c1c; margin-bottom: 4px; font-size: 13px;">${weakness.label} — ${weakness.score}/10</div>
+                <div style="font-size: 11px; color: #991b1b;">
+                  ${weakness.score <= 3 ? '⛔ CRITICAL — Fix this immediately' : weakness.score <= 6 ? '⚠️ MODERATE — Will impact your verdict' : '⚠ LOW — Nice to optimize'}
+                </div>
               </div>
-            </div>
-          `).join('')}
+            `).join('')}
+          </div>
         </div>
 
         <!-- INDIA MARKET DEEP DIVE SECTION -->
-        <h3 style="font-size: 18px; font-weight: bold; color: #0f172a; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">🇮🇳 India Market Strategy</h3>
-        <div style="margin-bottom: 30px;">
-          ${indiaAdvice.map(advice => `
-            <div style="margin-bottom: 12px; padding: 12px; background: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 4px;">
-              <div style="font-weight: bold; color: #b45309; margin-bottom: 6px;">${advice.title}</div>
-              <div style="font-size: 12px; color: #78350f; line-height: 1.5;">${advice.detail}</div>
-            </div>
-          `).join('')}
+        <div class="section-box">
+          <h3 style="font-size: 16px; font-weight: bold; color: #0f172a; margin-bottom: 12px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">🇮🇳 India Market Strategy</h3>
+          <div>
+            ${indiaAdvice.map(advice => `
+              <div class="section-box" style="margin-bottom: 10px; padding: 10px; background: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 4px; page-break-inside: avoid;">
+                <div style="font-weight: bold; color: #b45309; margin-bottom: 4px; font-size: 13px;">${advice.title}</div>
+                <div style="font-size: 11px; color: #78350f; line-height: 1.5;">${advice.detail}</div>
+              </div>
+            `).join('')}
+          </div>
         </div>
 
         <!-- ACHIEVEMENTS SECTION -->
         ${badges.length > 0 ? `
-          <h3 style="font-size: 18px; font-weight: bold; color: #0f172a; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">🏆 Your Achievements</h3>
-          <div style="margin-bottom: 30px;">
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+          <div class="section-box">
+            <h3 style="font-size: 16px; font-weight: bold; color: #0f172a; margin-bottom: 12px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">🏆 Your Achievements</h3>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; page-break-inside: avoid;">
               ${badges.map(badge => `
-                <div style="padding: 10px; text-align: center; background: #fef3c7; border-radius: 6px; border: 1px solid #fcd34d;">
-                  <div style="font-size: 24px; margin-bottom: 4px;">${badge.icon}</div>
-                  <div style="font-size: 11px; font-weight: bold; color: #78350f;">${badge.name}</div>
+                <div style="padding: 8px; text-align: center; background: #fef3c7; border-radius: 6px; border: 1px solid #fcd34d; page-break-inside: avoid;">
+                  <div style="font-size: 20px; margin-bottom: 4px;">${badge.icon}</div>
+                  <div style="font-size: 10px; font-weight: bold; color: #78350f;">${badge.name}</div>
                 </div>
               `).join('')}
             </div>
@@ -196,68 +211,80 @@ export default function Results() {
         ` : ''}
 
         <!-- PERSONAL STATS -->
-        <h3 style="font-size: 16px; font-weight: bold; color: #0f172a; margin-bottom: 12px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">📊 Your Stats</h3>
-        <table style="width: 100%; margin-bottom: 30px; border-collapse: collapse;">
-          <tr style="background: #dbeafe; border: 1px solid #bfdbfe;">
-            <td style="padding: 8px; color: #1e40af; font-weight: bold;">Total Ideas Analyzed</td>
-            <td style="padding: 8px; text-align: right; color: #1e40af; font-weight: bold;">${userStats.totalAnalyses}</td>
-          </tr>
-          <tr style="background: #f0f9ff; border: 1px solid #e0f2fe;">
-            <td style="padding: 8px; color: #0c4a6e;">This Week</td>
-            <td style="padding: 8px; text-align: right; color: #0c4a6e;">${userStats.thisWeek}</td>
-          </tr>
-        </table>
+        <div class="section-box">
+          <h3 style="font-size: 16px; font-weight: bold; color: #0f172a; margin-bottom: 10px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">📊 Your Stats</h3>
+          <table style="border-collapse: collapse; table-layout: fixed;">
+            <tr style="background: #dbeafe; border: 1px solid #bfdbfe;">
+              <td style="padding: 8px; color: #1e40af; font-weight: bold; font-size: 13px;">Total Ideas Analyzed</td>
+              <td style="padding: 8px; text-align: right; color: #1e40af; font-weight: bold; font-size: 13px;">${userStats.totalAnalyses}</td>
+            </tr>
+            <tr style="background: #f0f9ff; border: 1px solid #e0f2fe;">
+              <td style="padding: 8px; color: #0c4a6e; font-size: 13px;">This Week</td>
+              <td style="padding: 8px; text-align: right; color: #0c4a6e; font-size: 13px;">${userStats.thisWeek}</td>
+            </tr>
+          </table>
+        </div>
 
         ${item.result.why_this_will_fail && item.result.why_this_will_fail.length > 0 ? `
-          <h3 style="font-size: 18px; font-weight: bold; color: #0f172a; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">Why This Will Fail</h3>
-          <ul style="color: #475569; margin-bottom: 30px; padding-left: 20px;">
-            ${item.result.why_this_will_fail.map(r => `<li style="margin-bottom: 10px;">${r}</li>`).join('')}
-          </ul>
+          <div class="section-box">
+            <h3 style="font-size: 16px; font-weight: bold; color: #0f172a; margin-bottom: 12px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">Why This Will Fail</h3>
+            <ul style="color: #475569; padding-left: 20px; margin: 0; font-size: 13px;">
+              ${item.result.why_this_will_fail.map(r => `<li style="margin-bottom: 8px; page-break-inside: avoid;">${r}</li>`).join('')}
+            </ul>
+          </div>
         ` : ''}
 
         ${item.result.one_thing_to_validate_first ? `
-          <h3 style="font-size: 18px; font-weight: bold; color: #0f172a; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">Validate This First</h3>
-          <div style="padding: 15px; background: #e0e7ff; color: #3730a3; border-radius: 8px; font-weight: 500;">
-            ${item.result.one_thing_to_validate_first}
+          <div class="section-box">
+            <h3 style="font-size: 16px; font-weight: bold; color: #0f172a; margin-bottom: 12px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">Validate This First</h3>
+            <div style="padding: 12px; background: #e0e7ff; color: #3730a3; border-radius: 8px; font-weight: 500; font-size: 13px; page-break-inside: avoid;">
+              ${item.result.one_thing_to_validate_first}
+            </div>
           </div>
         ` : ''}
 
         ${item.result.timing_note ? `
-          <h3 style="font-size: 18px; font-weight: bold; color: #0f172a; margin-bottom: 10px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">Market Timing Note</h3>
-          <p style="color: #475569; margin-bottom: 30px; font-style: italic;">${item.result.timing_note}</p>
+          <div class="section-box">
+            <h3 style="font-size: 16px; font-weight: bold; color: #0f172a; margin-bottom: 10px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">Market Timing Note</h3>
+            <p style="color: #475569; margin: 0; font-style: italic; font-size: 13px; page-break-inside: avoid;">${item.result.timing_note}</p>
+          </div>
         ` : ''}
 
         ${item.result.similar_products_in_market && item.result.similar_products_in_market.length > 0 ? `
-          <h3 style="font-size: 18px; font-weight: bold; color: #0f172a; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">What Already Exists in This Market</h3>
-          <ul style="color: #475569; margin-bottom: 30px; padding-left: 20px;">
-            ${item.result.similar_products_in_market.map(p => {
-              const [name, ...rest] = p.split(' — ')
-              return `<li style="margin-bottom: 8px;"><strong>${name}</strong>${rest.length ? ' — ' + rest.join(' — ') : ''}</li>`
-            }).join('')}
-          </ul>
+          <div class="section-box">
+            <h3 style="font-size: 16px; font-weight: bold; color: #0f172a; margin-bottom: 12px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">What Already Exists in This Market</h3>
+            <ul style="color: #475569; padding-left: 20px; margin: 0; font-size: 13px;">
+              ${item.result.similar_products_in_market.map(p => {
+                const [name, ...rest] = p.split(' — ')
+                return `<li style="margin-bottom: 8px; page-break-inside: avoid;"><strong>${name}</strong>${rest.length ? ' — ' + rest.join(' — ') : ''}</li>`
+              }).join('')}
+            </ul>
+          </div>
         ` : ''}
 
         ${item.result.action_plan && item.result.action_plan.length > 0 ? `
-          <h3 style="font-size: 18px; font-weight: bold; color: #0f172a; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">Your 5-Step Action Plan</h3>
-          <ol style="color: #475569; margin-bottom: 30px; padding-left: 20px;">
-            ${item.result.action_plan.map(s => 
-              `<li style="margin-bottom: 12px;"><strong>${s.title}</strong><br/>${s.detail}</li>`
-            ).join('')}
-          </ol>
+          <div class="section-box">
+            <h3 style="font-size: 16px; font-weight: bold; color: #0f172a; margin-bottom: 12px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">Your 5-Step Action Plan</h3>
+            <ol style="color: #475569; padding-left: 20px; margin: 0; font-size: 13px;">
+              ${item.result.action_plan.map(s => 
+                `<li style="margin-bottom: 10px; page-break-inside: avoid;"><strong>${s.title}</strong><br/><span style="font-size: 12px;">${s.detail}</span></li>`
+              ).join('')}
+            </ol>
+          </div>
         ` : ''}
 
-        <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #e2e8f0; font-size: 12px; color: #64748b; text-align: center;">
-          <p>Generated by IdeaVerdict • Honest AI-powered startup idea evaluation</p>
-          <p>${new Date().toLocaleDateString('en-IN')}</p>
+        <div style="margin-top: 25px; padding-top: 15px; border-top: 2px solid #e2e8f0; font-size: 11px; color: #64748b; text-align: center; page-break-inside: avoid;">
+          <p style="margin: 0 0 5px 0;">Generated by IdeaVerdict • Honest AI-powered startup idea evaluation</p>
+          <p style="margin: 0;">${new Date().toLocaleDateString('en-IN')}</p>
         </div>
       </div>
     `;
 
     const opt = {
-      margin:       0,
+      margin:       [0.5, 0.5, 0.5, 0.5],
       filename:     `ideaverdict-${item.idea_title.substring(0, 20).toLowerCase().replace(/[^a-z0-9]+/g, '-')}.pdf`,
       image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2 },
+      html2canvas:  { scale: 2, useCORS: true, logging: false },
       jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
     };
 
