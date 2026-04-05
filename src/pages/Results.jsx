@@ -12,6 +12,7 @@ export default function Results() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [userStats, setUserStats] = useState({ totalAnalyses: 0, thisWeek: 0 })
+  const [activeTab, setActiveTab] = useState('overview')
 
   useEffect(() => {
     async function fetchAnalysis() {
@@ -421,206 +422,259 @@ export default function Results() {
             Download PDF
           </button>
 
-          {/* VERDICT BADGE */}
-          <div className={`flex flex-col items-center justify-center p-8 border rounded-xl ${getVerdictStyle(result.verdict)}`}>
-            <span className="uppercase text-sm tracking-widest font-bold opacity-80 mb-2">Verdict</span>
-            <span className="text-5xl font-black mb-2 tracking-tight">{result.verdict}</span>
-            <span className="text-xl opacity-90 font-medium">Score: {result.total_score} / 60</span>
-            {result.verdict === 'Sleeper Hit' && result.sleeper_hit_reason && (
-              <p className="mt-5 text-center text-sm font-medium border-t border-current/20 pt-4 px-4 w-full max-w-md">{result.sleeper_hit_reason}</p>
-            )}
-            {result.timing_note && (
-              <p className="mt-4 text-center text-xs italic text-slate-400 dark:text-slate-500 transition-colors">{result.timing_note}</p>
-            )}
+          {/* TAB NAVIGATION */}
+          <div className="flex gap-2 mb-6 border-b border-slate-700 dark:border-slate-300 pb-0 flex-wrap">
+            {[
+              { id: 'overview', label: '📊 Overview', icon: '📊' },
+              { id: 'analysis', label: '📈 Analysis', icon: '📈' },
+              { id: 'market', label: '🇮🇳 Market', icon: '🇮🇳' },
+              { id: 'progress', label: '🏆 Progress', icon: '🏆' }
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-4 py-3 font-semibold text-sm border-b-2 transition-all ${
+                  activeTab === tab.id
+                    ? 'border-cyan-500 text-cyan-400 dark:text-cyan-600'
+                    : 'border-transparent text-slate-400 dark:text-slate-600 hover:text-slate-300 dark:hover:text-slate-500'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
           </div>
 
-          {/* RISK HEATMAP - NEW FEATURE */}
-          <div>
-            <div className="flex items-center gap-2 mb-5">
-              <TrendingDown size={20} className="text-red-400" />
-              <h3 className="text-lg font-bold tracking-tight text-white dark:text-slate-900 border-b border-slate-800 dark:border-slate-300 pb-2 transition-colors flex-1">Risk Heatmap: Your Weakness Areas</h3>
-            </div>
-            <div className="space-y-3">
-              {getWeaknesses().map((weakness, idx) => (
-                <div key={weakness.key} className="p-4 rounded-lg bg-red-950/30 dark:bg-red-100/30 border border-red-500/20 dark:border-red-300/30 transition-colors">
-                  <div className="flex items-start gap-3">
-                    <span className="text-2xl flex-shrink-0">⚠️</span>
-                    <div className="flex-1">
-                      <p className="text-red-400 dark:text-red-700 font-bold text-sm">{weakness.label} — {weakness.score}/10</p>
-                      <div className="w-full bg-slate-800 dark:bg-slate-300 rounded-full h-1.5 mt-2 transition-colors">
-                        <div className="bg-red-500 h-1.5 rounded-full transition-colors" style={{ width: `${(weakness.score / 10) * 100}%` }}></div>
-                      </div>
-                      <p className="text-xs text-red-300 dark:text-red-600 mt-2 italic transition-colors">
-                        {weakness.score <= 3 ? '🔴 Critical — Fix this immediately' : weakness.score <= 6 ? '🟠 Moderate — Will impact your verdict' : '🟡 Low — Nice to optimize'}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div>
-            <h3 className="text-lg font-bold mb-5 tracking-tight text-white dark:text-slate-900 border-b border-slate-800 dark:border-slate-300 pb-2 transition-colors">Score Breakdown</h3>
-            <div className="space-y-5">
-              {Object.entries(result.scores || {}).map(([key, score]) => (
-                <div key={key}>
-                  <div className="flex justify-between text-sm mb-2">
-                    <span className="text-slate-300 dark:text-slate-700 font-medium transition-colors">{factorLabels[key] || key}</span>
-                    <span className="text-slate-400 dark:text-slate-600 font-mono font-medium transition-colors">{score}/10</span>
-                  </div>
-                  <div className="w-full bg-slate-800 dark:bg-slate-300 rounded-full h-2 break-inside-avoid transition-colors">
-                    <div className="bg-slate-400 dark:bg-slate-600 h-2 rounded-full transition-colors" style={{ width: `${(score / 10) * 100}%` }}></div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* WHY THIS WILL FAIL */}
-          {(result.why_this_will_fail && result.why_this_will_fail.length > 0) && (
-            <div>
-              <h3 className="text-lg font-bold mb-4 tracking-tight text-white dark:text-slate-900 border-b border-slate-800 dark:border-slate-300 pb-2 transition-colors">Why This Will Fail</h3>
-              <div className="space-y-3">
-                {result.why_this_will_fail.map((reason, idx) => (
-                  <div key={idx} className="p-4 rounded-lg bg-slate-950 dark:bg-slate-200 border border-slate-800 dark:border-slate-300 text-slate-300 dark:text-slate-700 text-sm leading-relaxed transition-colors">
-                    {reason}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* INDIA MARKET DEEP DIVE - NEW FEATURE */}
-          <div>
-            <div className="flex items-center gap-2 mb-5">
-              <MapPin size={20} className="text-orange-400" />
-              <h3 className="text-lg font-bold tracking-tight text-white dark:text-slate-900 border-b border-slate-800 dark:border-slate-300 pb-2 transition-colors flex-1">🇮🇳 India Market Strategy</h3>
-            </div>
-            <div className="space-y-3">
-              {getIndiaMarketAdvice().map((advice, idx) => (
-                <div key={idx} className="p-4 rounded-lg bg-orange-950/20 dark:bg-orange-100/30 border border-orange-500/20 dark:border-orange-300/30 transition-colors">
-                  <p className="text-orange-400 dark:text-orange-700 font-bold text-sm mb-2">{advice.title}</p>
-                  <p className="text-slate-400 dark:text-slate-600 text-sm leading-relaxed transition-colors">{advice.detail}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* WHAT ALREADY EXISTS IN MARKET */}
-          {(result.similar_products_in_market && result.similar_products_in_market.length > 0) && (
-            <div>
-              <h3 className="text-lg font-bold mb-4 tracking-tight text-white dark:text-slate-900 border-b border-slate-800 dark:border-slate-300 pb-2 transition-colors">What Already Exists in This Market</h3>
-              <div className="space-y-3">
-                {result.similar_products_in_market.map((product, idx) => {
-                  const [name, ...rest] = product.split('—');
-                  const description = rest.join('—').trim();
-                  return (
-                    <div key={idx} className="p-4 rounded-lg bg-slate-900 dark:bg-slate-100 border border-slate-800 dark:border-slate-300 transition-colors flex items-start gap-3">
-                      <span className="text-xl flex-shrink-0 mt-0.5">🏢</span>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-slate-100 dark:text-slate-900 text-sm">
-                          <span className="font-bold">{name.trim()}</span>
-                          {description && <> — <span className="text-slate-400 dark:text-slate-600">{description}</span></>
-                          }
-                        </p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* YOUR ACTION PLAN */}
-          {(result.action_plan && result.action_plan.length > 0) && (
-            <div>
-              <div className="mb-4">
-                <h3 className="text-lg font-bold tracking-tight text-white dark:text-slate-900 border-b border-slate-800 dark:border-slate-300 pb-2 transition-colors">Your 5-Step Action Plan</h3>
-                <p className="text-xs text-slate-400 dark:text-slate-500 mt-2 italic transition-colors">Only shown for ideas scoring 40+</p>
-              </div>
-              <div className="space-y-4">
-                {result.action_plan.map((step, idx) => (
-                  <div key={idx} className="flex gap-4">
-                    <div className="flex-shrink-0">
-                      <div className="flex items-center justify-center h-8 w-8 rounded-full bg-gradient-to-br from-teal-400 to-cyan-500 text-white font-bold text-sm">
-                        {step.step || idx + 1}
-                      </div>
-                    </div>
-                    <div className="flex-1 pt-0.5">
-                      <p className="text-slate-100 dark:text-slate-900 font-bold text-sm transition-colors">{step.title}</p>
-                      <p className="text-slate-400 dark:text-slate-600 text-sm mt-1 leading-relaxed transition-colors">{step.detail}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* ONE THING TO VALIDATE FIRST */}
-          {result.one_thing_to_validate_first && (
-            <div>
-              <h3 className="text-lg font-bold mb-4 tracking-tight text-white dark:text-slate-900 border-b border-slate-800 dark:border-slate-300 pb-2 transition-colors">Validate This First</h3>
-              <div className="p-5 rounded-lg bg-indigo-500/10 dark:bg-indigo-100/50 border border-indigo-500/20 dark:border-indigo-300/30 text-indigo-200 dark:text-indigo-900 text-base font-medium leading-relaxed shadow-inner transition-colors">
-                {result.one_thing_to_validate_first}
-              </div>
-            </div>
-          )}
-
-          {/* CONFIDENCE METER */}
-          <div>
-            <h3 className="text-lg font-bold mb-5 tracking-tight text-white dark:text-slate-900 border-b border-slate-800 dark:border-slate-300 pb-2 transition-colors">Analysis Confidence: {result.confidence}%</h3>
-            <div className="mb-5">
-              <div className="w-full bg-slate-800 dark:bg-slate-300 rounded-full h-2 transition-colors">
-                <div className={`h-2 rounded-full ${result.confidence >= 70 ? 'bg-green-500' : result.confidence >= 40 ? 'bg-amber-500' : 'bg-red-500'}`} style={{ width: `${result.confidence}%` }}></div>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap gap-2">
-              {Object.entries(result.confidence_breakdown || {}).map(([key, isTrue]) => (
-                <span key={key} className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border transition-colors ${isTrue ? 'bg-green-500/10 dark:bg-green-100/50 text-green-400 dark:text-green-700 border-green-500/20 dark:border-green-300/30' : 'bg-slate-800 dark:bg-slate-300 text-slate-500 dark:text-slate-600 border-slate-700 dark:border-slate-400'}`}>
-                  {confidenceLabels[key] || key}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          {/* LEADERBOARD & ACHIEVEMENTS - NEW FEATURE */}
-          <div className="space-y-5 pt-4">
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <Trophy size={20} className="text-yellow-400" />
-                <h3 className="text-lg font-bold tracking-tight text-white dark:text-slate-900 transition-colors">Your Achievements</h3>
-              </div>
-              <div className="grid grid-cols-3 gap-3 mb-5">
-                {getAchievements().length > 0 ? (
-                  getAchievements().map((badge, idx) => (
-                    <div key={idx} className="p-3 rounded-lg bg-gradient-to-br from-yellow-950/30 to-amber-950/30 dark:from-yellow-100/40 dark:to-amber-100/40 border border-yellow-500/20 dark:border-yellow-300/30 text-center transition-colors">
-                      <div className="text-2xl mb-1">{badge.icon}</div>
-                      <p className="text-xs font-bold text-yellow-400 dark:text-yellow-700">{badge.name}</p>
-                      <p className="text-xs text-yellow-300/60 dark:text-yellow-600/60 mt-0.5">{badge.desc}</p>
-                    </div>
-                  ))
-                ) : (
-                  <div className="col-span-3 text-center text-slate-400 dark:text-slate-600 text-xs py-3 italic">Keep analyzing to unlock badges!</div>
+          {/* TAB 1: OVERVIEW */}
+          {activeTab === 'overview' && (
+            <div className="space-y-6">
+              {/* VERDICT BADGE */}
+              <div className={`flex flex-col items-center justify-center p-8 border rounded-xl ${getVerdictStyle(result.verdict)}`}>
+                <span className="uppercase text-sm tracking-widest font-bold opacity-80 mb-2">Verdict</span>
+                <span className="text-5xl font-black mb-2 tracking-tight">{result.verdict}</span>
+                <span className="text-xl opacity-90 font-medium">Score: {result.total_score} / 60</span>
+                {result.verdict === 'Sleeper Hit' && result.sleeper_hit_reason && (
+                  <p className="mt-5 text-center text-sm font-medium border-t border-current/20 pt-4 px-4 w-full max-w-md">{result.sleeper_hit_reason}</p>
+                )}
+                {result.timing_note && (
+                  <p className="mt-4 text-center text-xs italic text-slate-400 dark:text-slate-500 transition-colors">{result.timing_note}</p>
                 )}
               </div>
-            </div>
 
-            {/* PERSONAL STATS */}
-            <div className="space-y-3">
-              <h4 className="text-sm font-bold text-slate-300 dark:text-slate-700 tracking-wide uppercase">Your Stats This Week</h4>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="p-3 rounded-lg bg-cyan-950/20 dark:bg-cyan-100/30 border border-cyan-500/20 dark:border-cyan-300/30 text-center transition-colors">
+              {/* QUICK STATS */}
+              <div className="grid grid-cols-3 gap-3">
+                <div className="p-4 rounded-lg bg-cyan-950/20 dark:bg-cyan-100/30 border border-cyan-500/20 dark:border-cyan-300/30 transition-colors text-center">
                   <p className="text-2xl font-bold text-cyan-400 dark:text-cyan-700">{userStats.totalAnalyses}</p>
                   <p className="text-xs text-cyan-300 dark:text-cyan-600 mt-1">Total Ideas</p>
                 </div>
-                <div className="p-3 rounded-lg bg-blue-950/20 dark:bg-blue-100/30 border border-blue-500/20 dark:border-blue-300/30 text-center transition-colors">
+                <div className="p-4 rounded-lg bg-blue-950/20 dark:bg-blue-100/30 border border-blue-500/20 dark:border-blue-300/30 transition-colors text-center">
                   <p className="text-2xl font-bold text-blue-400 dark:text-blue-700">{userStats.thisWeek}</p>
                   <p className="text-xs text-blue-300 dark:text-blue-600 mt-1">This Week</p>
                 </div>
+                <div className="p-4 rounded-lg bg-amber-950/20 dark:bg-amber-100/30 border border-amber-500/20 dark:border-amber-300/30 transition-colors text-center">
+                  <p className="text-2xl font-bold text-amber-400 dark:text-amber-700">{result.confidence}%</p>
+                  <p className="text-xs text-amber-300 dark:text-amber-600 mt-1">Confidence</p>
+                </div>
+              </div>
+
+              <p className="text-xs text-slate-500 dark:text-slate-400 text-center italic transition-colors">Click other tabs to explore detailed analysis, market insights, and your next steps</p>
+            </div>
+          )}
+
+          {/* TAB 2: SCORES & ANALYSIS */}
+          {activeTab === 'analysis' && (
+            <div className="space-y-6">
+              {/* SCORE BREAKDOWN */}
+              <div>
+                <h3 className="text-lg font-bold mb-5 tracking-tight text-white dark:text-slate-900 border-b border-slate-800 dark:border-slate-300 pb-2 transition-colors">📊 All Scores</h3>
+                <div className="space-y-5">
+                  {Object.entries(result.scores || {}).map(([key, score]) => (
+                    <div key={key}>
+                      <div className="flex justify-between text-sm mb-2">
+                        <span className="text-slate-300 dark:text-slate-700 font-medium transition-colors">{factorLabels[key] || key}</span>
+                        <span className="text-slate-400 dark:text-slate-600 font-mono font-medium transition-colors">{score}/10</span>
+                      </div>
+                      <div className="w-full bg-slate-800 dark:bg-slate-300 rounded-full h-2 break-inside-avoid transition-colors">
+                        <div className="bg-slate-400 dark:bg-slate-600 h-2 rounded-full transition-colors" style={{ width: `${(score / 10) * 100}%` }}></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* RISK HEATMAP */}
+              <div>
+                <div className="flex items-center gap-2 mb-5">
+                  <TrendingDown size={20} className="text-red-400" />
+                  <h3 className="text-lg font-bold tracking-tight text-white dark:text-slate-900 transition-colors">🚨 Your Top Weaknesses</h3>
+                </div>
+                <div className="space-y-3">
+                  {getWeaknesses().map((weakness, idx) => (
+                    <div key={weakness.key} className="p-4 rounded-lg bg-red-950/30 dark:bg-red-100/30 border border-red-500/20 dark:border-red-300/30 transition-colors">
+                      <div className="flex items-start gap-3">
+                        <span className="text-2xl flex-shrink-0">⚠️</span>
+                        <div className="flex-1">
+                          <p className="text-red-400 dark:text-red-700 font-bold text-sm">{weakness.label} — {weakness.score}/10</p>
+                          <div className="w-full bg-slate-800 dark:bg-slate-300 rounded-full h-1.5 mt-2 transition-colors">
+                            <div className="bg-red-500 h-1.5 rounded-full transition-colors" style={{ width: `${(weakness.score / 10) * 100}%` }}></div>
+                          </div>
+                          <p className="text-xs text-red-300 dark:text-red-600 mt-2 italic transition-colors">
+                            {weakness.score <= 3 ? '🔴 Critical — Fix this immediately' : weakness.score <= 6 ? '🟠 Moderate — Will impact your verdict' : '🟡 Low — Nice to optimize'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* WHY THIS WILL FAIL */}
+              {(result.why_this_will_fail && result.why_this_will_fail.length > 0) && (
+                <div>
+                  <h3 className="text-lg font-bold mb-4 tracking-tight text-white dark:text-slate-900 border-b border-slate-800 dark:border-slate-300 pb-2 transition-colors">❌ Failure Risks</h3>
+                  <div className="space-y-3">
+                    {result.why_this_will_fail.map((reason, idx) => (
+                      <div key={idx} className="p-4 rounded-lg bg-slate-950 dark:bg-slate-200 border border-slate-800 dark:border-slate-300 text-slate-300 dark:text-slate-700 text-sm leading-relaxed transition-colors">
+                        {reason}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* WHAT ALREADY EXISTS IN MARKET */}
+              {(result.similar_products_in_market && result.similar_products_in_market.length > 0) && (
+                <div>
+                  <h3 className="text-lg font-bold mb-4 tracking-tight text-white dark:text-slate-900 border-b border-slate-800 dark:border-slate-300 pb-2 transition-colors">🏢 Competition</h3>
+                  <div className="space-y-3">
+                    {result.similar_products_in_market.map((product, idx) => {
+                      const [name, ...rest] = product.split('—');
+                      const description = rest.join('—').trim();
+                      return (
+                        <div key={idx} className="p-4 rounded-lg bg-slate-900 dark:bg-slate-100 border border-slate-800 dark:border-slate-300 transition-colors flex items-start gap-3">
+                          <span className="text-xl flex-shrink-0 mt-0.5">🏢</span>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-slate-100 dark:text-slate-900 text-sm">
+                              <span className="font-bold">{name.trim()}</span>
+                              {description && <> — <span className="text-slate-400 dark:text-slate-600">{description}</span></>
+                              }
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* TAB 3: MARKET & ACTION */}
+          {activeTab === 'market' && (
+            <div className="space-y-6">
+              {/* INDIA MARKET DEEP DIVE */}
+              <div>
+                <div className="flex items-center gap-2 mb-5">
+                  <MapPin size={20} className="text-orange-400" />
+                  <h3 className="text-lg font-bold tracking-tight text-white dark:text-slate-900 transition-colors">Indian Market Strategy</h3>
+                </div>
+                <div className="space-y-3">
+                  {getIndiaMarketAdvice().map((advice, idx) => (
+                    <div key={idx} className="p-4 rounded-lg bg-orange-950/20 dark:bg-orange-100/30 border border-orange-500/20 dark:border-orange-300/30 transition-colors">
+                      <p className="text-orange-400 dark:text-orange-700 font-bold text-sm mb-2">{advice.title}</p>
+                      <p className="text-slate-400 dark:text-slate-600 text-sm leading-relaxed transition-colors">{advice.detail}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* YOUR ACTION PLAN */}
+              {(result.action_plan && result.action_plan.length > 0) && (
+                <div>
+                  <h3 className="text-lg font-bold tracking-tight text-white dark:text-slate-900 border-b border-slate-800 dark:border-slate-300 pb-2 transition-colors">🎯 5-Step Roadmap</h3>
+                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-2 mb-4 italic transition-colors">Actionable steps to execute this idea</p>
+                  <div className="space-y-4">
+                    {result.action_plan.map((step, idx) => (
+                      <div key={idx} className="flex gap-4">
+                        <div className="flex-shrink-0">
+                          <div className="flex items-center justify-center h-8 w-8 rounded-full bg-gradient-to-br from-teal-400 to-cyan-500 text-white font-bold text-sm">
+                            {step.step || idx + 1}
+                          </div>
+                        </div>
+                        <div className="flex-1 pt-0.5">
+                          <p className="text-slate-100 dark:text-slate-900 font-bold text-sm transition-colors">{step.title}</p>
+                          <p className="text-slate-400 dark:text-slate-600 text-sm mt-1 leading-relaxed transition-colors">{step.detail}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* ONE THING TO VALIDATE FIRST */}
+              {result.one_thing_to_validate_first && (
+                <div>
+                  <h3 className="text-lg font-bold mb-4 tracking-tight text-white dark:text-slate-900 border-b border-slate-800 dark:border-slate-300 pb-2 transition-colors">⭐ Validate This First</h3>
+                  <div className="p-5 rounded-lg bg-indigo-500/10 dark:bg-indigo-100/50 border border-indigo-500/20 dark:border-indigo-300/30 text-indigo-200 dark:text-indigo-900 text-base font-medium leading-relaxed shadow-inner transition-colors">
+                    {result.one_thing_to_validate_first}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* TAB 4: PROGRESS */}
+          {activeTab === 'progress' && (
+            <div className="space-y-6">
+              {/* ACHIEVEMENTS */}
+              {getAchievements().length > 0 && (
+                <div>
+                  <h3 className="text-lg font-bold mb-4 tracking-tight text-white dark:text-slate-900 transition-colors">🏆 Your Achievements</h3>
+                  <div className="grid grid-cols-3 gap-3">
+                    {getAchievements().map((badge, idx) => (
+                      <div key={idx} className="p-4 rounded-lg bg-gradient-to-br from-yellow-950/30 to-amber-950/30 dark:from-yellow-100/40 dark:to-amber-100/40 border border-yellow-500/20 dark:border-yellow-300/30 text-center transition-colors">
+                        <div className="text-3xl mb-2">{badge.icon}</div>
+                        <p className="text-xs font-bold text-yellow-400 dark:text-yellow-700">{badge.name}</p>
+                        <p className="text-xs text-yellow-300/60 dark:text-yellow-600/60 mt-0.5">{badge.desc}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* CONFIDENCE METER */}
+              <div>
+                <h3 className="text-lg font-bold mb-5 tracking-tight text-white dark:text-slate-900 border-b border-slate-800 dark:border-slate-300 pb-2 transition-colors">📊 Analysis Confidence: {result.confidence}%</h3>
+                <div className="mb-5">
+                  <div className="w-full bg-slate-800 dark:bg-slate-300 rounded-full h-3 transition-colors">
+                    <div className={`h-3 rounded-full ${result.confidence >= 70 ? 'bg-green-500' : result.confidence >= 40 ? 'bg-amber-500' : 'bg-red-500'}`} style={{ width: `${result.confidence}%` }}></div>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  {Object.entries(result.confidence_breakdown || {}).map(([key, isTrue]) => (
+                    <span key={key} className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border transition-colors ${isTrue ? 'bg-green-500/10 dark:bg-green-100/50 text-green-400 dark:text-green-700 border-green-500/20 dark:border-green-300/30' : 'bg-slate-800 dark:bg-slate-300 text-slate-500 dark:text-slate-600 border-slate-700 dark:border-slate-400'}`}>
+                      {confidenceLabels[key] || key}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* STATS TABLE */}
+              <div>
+                <h3 className="text-lg font-bold mb-4 tracking-tight text-white dark:text-slate-900 transition-colors">📈 Your Stats</h3>
+                <div className="space-y-2">
+                  <div className="p-4 rounded-lg bg-slate-800/50 dark:bg-slate-200/50 border border-slate-700 dark:border-slate-300 flex justify-between items-center transition-colors">
+                    <span className="text-slate-300 dark:text-slate-700 font-medium">Total Ideas Analyzed</span>
+                    <span className="text-xl font-bold text-cyan-400 dark:text-cyan-600">{userStats.totalAnalyses}</span>
+                  </div>
+                  <div className="p-4 rounded-lg bg-slate-800/50 dark:bg-slate-200/50 border border-slate-700 dark:border-slate-300 flex justify-between items-center transition-colors">
+                    <span className="text-slate-300 dark:text-slate-700 font-medium">This Week</span>
+                    <span className="text-xl font-bold text-blue-400 dark:text-blue-600">{userStats.thisWeek}</span>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           <Link
             to="/dashboard"
