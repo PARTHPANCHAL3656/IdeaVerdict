@@ -1,9 +1,48 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { Lightbulb, Target, TrendingUp, Users, AlertCircle, CheckCircle } from 'lucide-react'
+import { Lightbulb, Target, TrendingUp, Users, AlertCircle, CheckCircle, Zap, Grid3x3 } from 'lucide-react'
 import { SwitchMode } from '../components/SwitchMode'
 import { Indicator } from '../components/Indicator'
+
+const TEMPLATES = {
+  marketplace: {
+    name: 'Marketplace',
+    icon: '🛒',
+    idea_title: 'Peer-to-peer [category] marketplace for [use case]',
+    idea_description: 'A platform that connects [buyers] with [sellers] for [transaction type]. Users list items/services, buyers browse and transact, we take [commission %] per transaction.',
+    problem_statement: '[Buyers/Sellers] waste time finding [items/services]. Currently they use [existing solution, which has issues]. We save them [time/money/effort].',
+    target_user: '[Specific buyer demographics] in [geography], aged [age range], with [income/needs]',
+    india_market_context: 'Pricing: [amount]. Target cities: [cities]. Distribution: [how you reach users].',
+  },
+  saas: {
+    name: 'SaaS Tool',
+    icon: '⚙️',
+    idea_title: 'AI-powered [function] platform for [industry/role]',
+    idea_description: 'A web app that automates [specific workflow] using AI. [target user] uploads [input], AI processes it and generates [output], saving them [metric] per month.',
+    problem_statement: '[Profession] spend [X hours] daily on [repetitive task]. Current tools are [reason they\'re bad]. We automate 80% of this work.',
+    target_user: '[Specific profession/company size], typically [income level], in [geographies]',
+    india_market_context: 'Pricing: [per-user/per-transaction/subscription]. Sales model: [direct sales/self-serve]. Churn risk: [consideration].',
+  },
+  aiagent: {
+    name: 'AI Agent',
+    icon: '🤖',
+    idea_title: 'AI agent that [solves problem] via [interface]',
+    idea_description: 'An AI-powered agent (via WhatsApp/Telegram/web) that understands natural language and [task]. Users chat with it, it does [action], reports results real-time.',
+    problem_statement: '[Users] need to [task], but existing tools require [complexity/cost/time]. Our agent handles this in natural conversation.',
+    target_user: '[Specific segment], typically [demographic], in [region], with [pain point]',
+    india_market_context: 'Distribution: [WhatsApp/Telegram/web]. Monetization: [ad/subscription/transaction]. Regulatory: [consideration].',
+  },
+  community: {
+    name: 'Community',
+    icon: '👥',
+    idea_title: '[Niche] community for [specific audience]',
+    idea_description: 'A private community (Discord/Circle/Slack) where [group] can [interact/learn/build]. Members pay [fee] and get access to [content/network/tools].',
+    problem_statement: '[Group] are scattered and isolated. They want to [connect/learn/collaborate]. Current options are [generic/expensive/fragmented].',
+    target_user: '[Specific niche], typically [demographics], who value [what]',
+    india_market_context: 'Pricing: [membership fee]. Growth: [how you acquire members]. Content: [who builds it].',
+  },
+}
 
 export default function Dashboard() {
   const navigate = useNavigate()
@@ -26,6 +65,22 @@ export default function Dashboard() {
   const [errors, setErrors] = useState({})
   const [isLoading, setIsLoading] = useState(false)
   const [apiError, setApiError] = useState(null)
+  const [quickMode, setQuickMode] = useState(false)
+  const [selectedTemplate, setSelectedTemplate] = useState(null)
+  
+  const applyTemplate = (templateKey) => {
+    const template = TEMPLATES[templateKey]
+    setFormData(prev => ({
+      ...prev,
+      idea_title: template.idea_title,
+      idea_description: template.idea_description,
+      problem_statement: template.problem_statement,
+      target_user: template.target_user,
+      india_market_context: template.india_market_context,
+    }))
+    setSelectedTemplate(templateKey)
+  }
+
   const handleLogout = async () => {
     await supabase.auth.signOut()
     navigate('/auth')
@@ -49,11 +104,14 @@ export default function Dashboard() {
     const newErrors = {};
 
     if (!formData.idea_title.trim()) newErrors.idea_title = "Title is required";
-    if (!formData.idea_description.trim()) newErrors.idea_description = "Description is required";
     if (!formData.problem_statement.trim()) newErrors.problem_statement = "Problem statement is required";
-    if (!formData.target_user.trim()) newErrors.target_user = "Target user is required";
-    if (formData.knows_competitors && !formData.named_competitors.trim()) {
-      newErrors.named_competitors = "Please name your competitors";
+    
+    if (!quickMode) {
+      if (!formData.idea_description.trim()) newErrors.idea_description = "Description is required";
+      if (!formData.target_user.trim()) newErrors.target_user = "Target user is required";
+      if (formData.knows_competitors && !formData.named_competitors.trim()) {
+        newErrors.named_competitors = "Please name your competitors";
+      }
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -338,13 +396,72 @@ Needs External Funding: ${formData.needs_funding}`;
           <div className="absolute inset-0 bg-gradient-to-r from-cyan-600/10 dark:from-cyan-600/5 to-blue-600/10 dark:to-blue-600/5 rounded-2xl blur-xl transition-colors"></div>
           <div className="relative bg-slate-900/60 dark:bg-slate-100/60 backdrop-blur border border-slate-800/50 dark:border-slate-200/30 rounded-2xl p-8 lg:p-12 transition-colors">
             <form onSubmit={handleSubmit} className="space-y-8">
+              {/* Quick Mode & Template Selection */}
+              <div className="space-y-6">
+                {/* Quick Mode Toggle */}
+                <div className="flex items-center justify-between p-4 rounded-lg bg-gradient-to-r from-cyan-950/30 dark:from-cyan-100/30 to-blue-950/30 dark:to-blue-100/30 border border-cyan-700/30 dark:border-cyan-400/30 hover:border-cyan-600/50 dark:hover:border-cyan-400/50 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <Zap size={20} className="text-cyan-400" />
+                    <div>
+                      <p className="font-semibold text-white dark:text-slate-900 transition-colors">Quick Mode</p>
+                      <p className="text-xs text-slate-400 dark:text-slate-600 transition-colors">3 questions • 60 seconds</p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setQuickMode(!quickMode)}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                      quickMode ? 'bg-cyan-500' : 'bg-slate-700 dark:bg-slate-300'
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        quickMode ? 'translate-x-6' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                {/* Template Selection - Only show in full mode */}
+                {!quickMode && (
+                  <div>
+                    <label className="block text-sm font-semibold mb-3 text-slate-200 dark:text-slate-800 flex items-center gap-2 transition-colors">
+                      <Grid3x3 size={16} className="text-cyan-400" />
+                      Choose a template
+                      <span className="text-slate-500 dark:text-slate-400 font-normal text-xs ml-1 transition-colors">(optional)</span>
+                    </label>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                      {Object.entries(TEMPLATES).map(([key, template]) => (
+                        <button
+                          key={key}
+                          type="button"
+                          onClick={() => applyTemplate(key)}
+                          className={`p-4 rounded-lg border-2 transition-all text-center ${
+                            selectedTemplate === key
+                              ? 'border-cyan-500 bg-cyan-950/30 dark:bg-cyan-100/30'
+                              : 'border-slate-700/50 dark:border-slate-300/50 bg-slate-800/30 dark:bg-slate-200/30 hover:border-slate-600 dark:hover:border-slate-300'
+                          }`}
+                        >
+                          <div className="text-2xl mb-2">{template.icon}</div>
+                          <p className="text-xs font-semibold text-slate-200 dark:text-slate-800 transition-colors">{template.name}</p>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Divider */}
+              <div className="h-px bg-gradient-to-r from-transparent via-slate-700/50 dark:via-slate-300/50 to-transparent transition-colors"></div>
               {/* Section Header */}
               <div className="text-center mb-8">
                 <h3 className="text-2xl font-semibold text-white dark:text-slate-900 mb-2 flex items-center justify-center gap-2 transition-colors">
                   <Lightbulb size={24} className="text-cyan-400" />
-                  Your Idea
+                  {quickMode ? "Rapid Fire Evaluation" : "Your Idea"}
                 </h3>
-                <p className="text-base text-slate-400 dark:text-slate-600 transition-colors">Tell us what you're building</p>
+                <p className="text-base text-slate-400 dark:text-slate-600 transition-colors">
+                  {quickMode ? "Answer 3 quick questions and get an instant verdict" : "Tell us what you're building"}
+                </p>
               </div>
               {/* SECTION 1: Your Idea */}
               <div className="space-y-6">
@@ -368,25 +485,27 @@ Needs External Funding: ${formData.needs_funding}`;
                   )}
                 </div>
 
-                {/* Idea Description */}
-                <div>
-                  <label className="block text-sm font-semibold mb-2 text-slate-200 dark:text-slate-800 transition-colors">
-                    What's your idea? <span className="text-red-400 dark:text-red-600">*</span>
-                  </label>
-                  <textarea
-                    name="idea_description"
-                    value={formData.idea_description}
-                    onChange={handleChange}
-                    rows={4}
-                    placeholder="What does it do, who is it for, and how does it work?"
-                    className="w-full px-4 py-3 rounded-lg border border-slate-700/50 dark:border-slate-300/50 bg-slate-800/50 dark:bg-slate-100/50 text-white dark:text-slate-900 placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all resize-none"
-                  />
-                  {errors.idea_description && (
-                    <p className="mt-2 text-sm text-red-400 flex items-center gap-1">
-                      <AlertCircle size={14} /> {errors.idea_description}
-                    </p>
-                  )}
-                </div>
+                {/* Idea Description - Hide in quick mode */}
+                {!quickMode && (
+                  <div>
+                    <label className="block text-sm font-semibold mb-2 text-slate-200 dark:text-slate-800 transition-colors">
+                      What's your idea? <span className="text-red-400 dark:text-red-600">*</span>
+                    </label>
+                    <textarea
+                      name="idea_description"
+                      value={formData.idea_description}
+                      onChange={handleChange}
+                      rows={4}
+                      placeholder="What does it do, who is it for, and how does it work?"
+                      className="w-full px-4 py-3 rounded-lg border border-slate-700/50 dark:border-slate-300/50 bg-slate-800/50 dark:bg-slate-100/50 text-white dark:text-slate-900 placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all resize-none"
+                    />
+                    {errors.idea_description && (
+                      <p className="mt-2 text-sm text-red-400 flex items-center gap-1">
+                        <AlertCircle size={14} /> {errors.idea_description}
+                      </p>
+                    )}
+                  </div>
+                )}
 
                 {/* Problem Statement */}
                 <div>
@@ -397,7 +516,7 @@ Needs External Funding: ${formData.needs_funding}`;
                     name="problem_statement"
                     value={formData.problem_statement}
                     onChange={handleChange}
-                    rows={3}
+                    rows={quickMode ? 2 : 3}
                     placeholder="e.g. Doctors lose 30+ mins daily to manual OPD records. Wait times avg 45 mins."
                     className="w-full px-4 py-3 rounded-lg border border-slate-700/50 dark:border-slate-300/50 bg-slate-800/50 dark:bg-slate-100/50 text-white dark:text-slate-900 placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all resize-none"
                   />
@@ -408,43 +527,46 @@ Needs External Funding: ${formData.needs_funding}`;
                   )}
                 </div>
 
-                {/* Expertise Section */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
-                  <div>
-                    <label className="block text-sm font-semibold mb-2 text-slate-200 dark:text-slate-800 transition-colors">
-                      Your Domain Expertise
-                      <span className="text-slate-500 dark:text-slate-400 font-normal text-xs ml-1 transition-colors">(optional)</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="domain_expertise"
-                      value={formData.domain_expertise}
-                      onChange={handleChange}
-                      placeholder="e.g. 1 year at a hospital"
-                      className="w-full px-4 py-3 rounded-lg border border-slate-700/50 dark:border-slate-300/50 bg-slate-800/50 dark:bg-slate-100/50 text-white dark:text-slate-900 placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all"
-                    />
+                {/* Expertise Section - Hide in quick mode */}
+                {!quickMode && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
+                    <div>
+                      <label className="block text-sm font-semibold mb-2 text-slate-200 dark:text-slate-800 transition-colors">
+                        Your Domain Expertise
+                        <span className="text-slate-500 dark:text-slate-400 font-normal text-xs ml-1 transition-colors">(optional)</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="domain_expertise"
+                        value={formData.domain_expertise}
+                        onChange={handleChange}
+                        placeholder="e.g. 1 year at a hospital"
+                        className="w-full px-4 py-3 rounded-lg border border-slate-700/50 dark:border-slate-300/50 bg-slate-800/50 dark:bg-slate-100/50 text-white dark:text-slate-900 placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold mb-2 text-slate-200 dark:text-slate-800 transition-colors">
+                        Technical Skills
+                        <span className="text-slate-500 dark:text-slate-400 font-normal text-xs ml-1 transition-colors">(optional)</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="technical_skills"
+                        value={formData.technical_skills}
+                        onChange={handleChange}
+                        placeholder="e.g. Can code, built 2 projects"
+                        className="w-full px-4 py-3 rounded-lg border border-slate-700/50 dark:border-slate-300/50 bg-slate-800/50 dark:bg-slate-100/50 text-white dark:text-slate-900 placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all"
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <label className="block text-sm font-semibold mb-2 text-slate-200 dark:text-slate-800 transition-colors">
-                      Technical Skills
-                      <span className="text-slate-500 dark:text-slate-400 font-normal text-xs ml-1 transition-colors">(optional)</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="technical_skills"
-                      value={formData.technical_skills}
-                      onChange={handleChange}
-                      placeholder="e.g. Can code, built 2 projects"
-                      className="w-full px-4 py-3 rounded-lg border border-slate-700/50 dark:border-slate-300/50 bg-slate-800/50 dark:bg-slate-100/50 text-white dark:text-slate-900 placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all"
-                    />
-                  </div>
-                </div>
+                )}
               </div>
 
               {/* Divider */}
             <div className="h-px bg-gradient-to-r from-transparent via-slate-700/50 dark:via-slate-300/50 to-transparent transition-colors"></div>
 
-            {/* SECTION 2: Market Details */}
+            {/* SECTION 2: Market Details - Hide in quick mode */}
+            {!quickMode && (
             <div className="space-y-6">
               <div>
                 <h3 className="text-lg font-semibold text-white dark:text-slate-900 mb-1 flex items-center gap-2 transition-colors">
@@ -508,11 +630,13 @@ Needs External Funding: ${formData.needs_funding}`;
                 </select>
               </div>
             </div>
+            )}
 
             {/* Divider */}
             <div className="h-px bg-gradient-to-r from-transparent via-slate-700/50 dark:via-slate-300/50 to-transparent transition-colors"></div>
 
-            {/* SECTION 3: Competitive Landscape */}
+            {/* SECTION 3: Competitive Landscape - Hide in quick mode */}
+            {!quickMode && (
             <div className="space-y-6">
               <div>
                 <h3 className="text-lg font-semibold text-white dark:text-slate-900 mb-1 flex items-center gap-2 transition-colors">
@@ -558,11 +682,13 @@ Needs External Funding: ${formData.needs_funding}`;
                 </div>
               )}
             </div>
+            )}
 
             {/* Divider */}
             <div className="h-px bg-gradient-to-r from-transparent via-slate-700/50 dark:via-slate-300/50 to-transparent transition-colors"></div>
 
-            {/* SECTION 4: Team & Funding */}
+            {/* SECTION 4: Team & Funding - Hide in quick mode */}
+            {!quickMode && (
             <div className="space-y-6">
               <div>
                 <h3 className="text-lg font-semibold text-white dark:text-slate-900 mb-1 flex items-center gap-2 transition-colors">
@@ -605,6 +731,7 @@ Needs External Funding: ${formData.needs_funding}`;
                 </label>
               </div>
             </div>
+            )}
 
             {/* Error Message */}
             {apiError && (
@@ -627,12 +754,21 @@ Needs External Funding: ${formData.needs_funding}`;
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    Analysing your idea...
+                    {quickMode ? 'Getting quick verdict...' : 'Analysing your idea...'}
                   </>
                 ) : (
                   <>
-                    <Lightbulb size={20} />
-                    Get Verdict
+                    {quickMode ? (
+                      <>
+                        <Zap size={20} />
+                        Quick Verdict
+                      </>
+                    ) : (
+                      <>
+                        <Lightbulb size={20} />
+                        Get Verdict
+                      </>
+                    )}
                   </>
                 )}
               </button>
@@ -649,4 +785,3 @@ Needs External Funding: ${formData.needs_funding}`;
     </div>
   )
 }
-
