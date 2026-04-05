@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import html2pdf from 'html2pdf.js'
+import { AlertCircle, TrendingDown, Zap, MapPin, Trophy } from 'lucide-react'
 
 export default function Results() {
   const { id } = useParams()
@@ -10,6 +11,7 @@ export default function Results() {
   const [analysis, setAnalysis] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [userStats, setUserStats] = useState({ totalAnalyses: 0, thisWeek: 0 })
 
   useEffect(() => {
     async function fetchAnalysis() {
@@ -24,6 +26,26 @@ export default function Results() {
         if (!data) throw new Error("Analysis not found")
         
         setAnalysis(data)
+
+        // Fetch user stats
+        const { data: { user }, error: authError } = await supabase.auth.getUser()
+        if (!authError && user) {
+          // Get total analyses
+          const { count: totalCount } = await supabase
+            .from('analyses')
+            .select('*', { count: 'exact' })
+            .eq('user_id', user.id)
+
+          // Get analyses from this week
+          const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+          const { count: weekCount } = await supabase
+            .from('analyses')
+            .select('*', { count: 'exact' })
+            .eq('user_id', user.id)
+            .gte('created_at', oneWeekAgo)
+
+          setUserStats({ totalAnalyses: totalCount || 0, thisWeek: weekCount || 0 })
+        }
       } catch (err) {
         console.error(err)
         setError("Could not load analysis details.")
@@ -159,6 +181,70 @@ export default function Results() {
     idea_description_sufficient: "Description Sufficient"
   };
 
+  // Get weakness areas for Risk Heatmap
+  const getWeaknesses = () => {
+    const scores = result.scores || {}
+    return Object.entries(scores)
+      .map(([key, score]) => ({ key, score, label: factorLabels[key] }))
+      .sort((a, b) => a.score - b.score)
+      .slice(0, 3) // Top 3 weakest areas
+  }
+
+  // India Market advice based on verdict and scores
+  const getIndiaMarketAdvice = () => {
+    const scores = result.scores || {}
+    const advice = []
+    
+    if (scores.india_market_fit <= 5) {
+      advice.push({
+        title: "🏙️ City Strategy",
+        detail: "Start with Tier-1 (Delhi, Mumbai, Bangalore) where payment habits are established. Tier-2 requires different pricing and reach (local influencers, WhatsApp communities)."
+      })
+    }
+    
+    if (scores.first_revenue_likelihood <= 5) {
+      advice.push({
+        title: "💰 Revenue Unlock",
+        detail: "Indian users expect freemium/free trial. Build a free tier first, monetize power users. Consider subscription at ₹99-299/month for B2C or commission-based for marketplaces."
+      })
+    }
+    
+    if (scores.target_user_fit <= 5) {
+      advice.push({
+        title: "📱 Reach Your User",
+        detail: "90% of Indian users access via mobile-first. WhatsApp, YouTube, and vernacular language content outperform English. Consider Bhasha partnerships."
+      })
+    }
+    
+    if (scores.problem_clarity <= 5) {
+      advice.push({
+        title: "📊 Problem Validation",
+        detail: "Talk to 10+ users in-market. IndiaStack (Aadhaar, UPI) enables use cases impossible in Western markets — leverage it."
+      })
+    }
+
+    if (advice.length === 0) {
+      advice.push({
+        title: "✅ India-First Ready",
+        detail: "Your idea has strong India market fundamentals. Focus on execution and go-to-market — localization of UI/pricing can wait until you have traction."
+      })
+    }
+
+    return advice
+  }
+
+  // Achievement badges
+  const getAchievements = () => {
+    const badges = []
+    if (userStats.totalAnalyses >= 1) badges.push({ icon: '🔍', name: 'First Verdict', desc: 'Analyzed your first idea' })
+    if (userStats.totalAnalyses >= 5) badges.push({ icon: '🔥', name: 'Idea Explorer', desc: '5+ ideas analyzed' })
+    if (userStats.thisWeek >= 3) badges.push({ icon: '⚡', name: 'Speed Tester', desc: '3+ ideas this week' })
+    if (result.verdict === 'Build It') badges.push({ icon: '✅', name: 'Build Ready', desc: 'Got a "Build It" verdict' })
+    if (result.verdict === 'Sleeper Hit') badges.push({ icon: '💡', name: 'Hidden Gem', desc: 'Discovered a Sleeper Hit' })
+    if (result.total_score >= 55) badges.push({ icon: '🚀', name: 'Star Founder', desc: 'Scored 55+ points' })
+    return badges
+  }
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-950 text-white">
@@ -236,7 +322,31 @@ export default function Results() {
             )}
           </div>
 
-          {/* SCORE BREAKDOWN */}
+          {/* RISK HEATMAP - NEW FEATURE */}
+          <div>
+            <div className="flex items-center gap-2 mb-5">
+              <TrendingDown size={20} className="text-red-400" />
+              <h3 className="text-lg font-bold tracking-tight text-white dark:text-slate-900 border-b border-slate-800 dark:border-slate-300 pb-2 transition-colors flex-1">Risk Heatmap: Your Weakness Areas</h3>
+            </div>
+            <div className="space-y-3">
+              {getWeaknesses().map((weakness, idx) => (
+                <div key={weakness.key} className="p-4 rounded-lg bg-red-950/30 dark:bg-red-100/30 border border-red-500/20 dark:border-red-300/30 transition-colors">
+                  <div className="flex items-start gap-3">
+                    <span className="text-2xl flex-shrink-0">⚠️</span>
+                    <div className="flex-1">
+                      <p className="text-red-400 dark:text-red-700 font-bold text-sm">{weakness.label} — {weakness.score}/10</p>
+                      <div className="w-full bg-slate-800 dark:bg-slate-300 rounded-full h-1.5 mt-2 transition-colors">
+                        <div className="bg-red-500 h-1.5 rounded-full transition-colors" style={{ width: `${(weakness.score / 10) * 100}%` }}></div>
+                      </div>
+                      <p className="text-xs text-red-300 dark:text-red-600 mt-2 italic transition-colors">
+                        {weakness.score <= 3 ? '🔴 Critical — Fix this immediately' : weakness.score <= 6 ? '🟠 Moderate — Will impact your verdict' : '🟡 Low — Nice to optimize'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
           <div>
             <h3 className="text-lg font-bold mb-5 tracking-tight text-white dark:text-slate-900 border-b border-slate-800 dark:border-slate-300 pb-2 transition-colors">Score Breakdown</h3>
             <div className="space-y-5">
@@ -267,6 +377,22 @@ export default function Results() {
               </div>
             </div>
           )}
+
+          {/* INDIA MARKET DEEP DIVE - NEW FEATURE */}
+          <div>
+            <div className="flex items-center gap-2 mb-5">
+              <MapPin size={20} className="text-orange-400" />
+              <h3 className="text-lg font-bold tracking-tight text-white dark:text-slate-900 border-b border-slate-800 dark:border-slate-300 pb-2 transition-colors flex-1">🇮🇳 India Market Strategy</h3>
+            </div>
+            <div className="space-y-3">
+              {getIndiaMarketAdvice().map((advice, idx) => (
+                <div key={idx} className="p-4 rounded-lg bg-orange-950/20 dark:bg-orange-100/30 border border-orange-500/20 dark:border-orange-300/30 transition-colors">
+                  <p className="text-orange-400 dark:text-orange-700 font-bold text-sm mb-2">{advice.title}</p>
+                  <p className="text-slate-400 dark:text-slate-600 text-sm leading-relaxed transition-colors">{advice.detail}</p>
+                </div>
+              ))}
+            </div>
+          </div>
 
           {/* WHAT ALREADY EXISTS IN MARKET */}
           {(result.similar_products_in_market && result.similar_products_in_market.length > 0) && (
@@ -343,6 +469,44 @@ export default function Results() {
                   {confidenceLabels[key] || key}
                 </span>
               ))}
+            </div>
+          </div>
+
+          {/* LEADERBOARD & ACHIEVEMENTS - NEW FEATURE */}
+          <div className="space-y-5 pt-4">
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <Trophy size={20} className="text-yellow-400" />
+                <h3 className="text-lg font-bold tracking-tight text-white dark:text-slate-900 transition-colors">Your Achievements</h3>
+              </div>
+              <div className="grid grid-cols-3 gap-3 mb-5">
+                {getAchievements().length > 0 ? (
+                  getAchievements().map((badge, idx) => (
+                    <div key={idx} className="p-3 rounded-lg bg-gradient-to-br from-yellow-950/30 to-amber-950/30 dark:from-yellow-100/40 dark:to-amber-100/40 border border-yellow-500/20 dark:border-yellow-300/30 text-center transition-colors">
+                      <div className="text-2xl mb-1">{badge.icon}</div>
+                      <p className="text-xs font-bold text-yellow-400 dark:text-yellow-700">{badge.name}</p>
+                      <p className="text-xs text-yellow-300/60 dark:text-yellow-600/60 mt-0.5">{badge.desc}</p>
+                    </div>
+                  ))
+                ) : (
+                  <div className="col-span-3 text-center text-slate-400 dark:text-slate-600 text-xs py-3 italic">Keep analyzing to unlock badges!</div>
+                )}
+              </div>
+            </div>
+
+            {/* PERSONAL STATS */}
+            <div className="space-y-3">
+              <h4 className="text-sm font-bold text-slate-300 dark:text-slate-700 tracking-wide uppercase">Your Stats This Week</h4>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="p-3 rounded-lg bg-cyan-950/20 dark:bg-cyan-100/30 border border-cyan-500/20 dark:border-cyan-300/30 text-center transition-colors">
+                  <p className="text-2xl font-bold text-cyan-400 dark:text-cyan-700">{userStats.totalAnalyses}</p>
+                  <p className="text-xs text-cyan-300 dark:text-cyan-600 mt-1">Total Ideas</p>
+                </div>
+                <div className="p-3 rounded-lg bg-blue-950/20 dark:bg-blue-100/30 border border-blue-500/20 dark:border-blue-300/30 text-center transition-colors">
+                  <p className="text-2xl font-bold text-blue-400 dark:text-blue-700">{userStats.thisWeek}</p>
+                  <p className="text-xs text-blue-300 dark:text-blue-600 mt-1">This Week</p>
+                </div>
+              </div>
             </div>
           </div>
 
