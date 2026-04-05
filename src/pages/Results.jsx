@@ -75,6 +75,61 @@ export default function Results() {
   const handleDownloadPDF = async () => {
     if (!analysis) return;
     const item = analysis;
+    const result = item.result;
+
+    // Generate content for weaknesses
+    const weaknesses = Object.entries(result.scores || {})
+      .map(([key, score]) => ({ key, score, label: factorLabels[key] }))
+      .sort((a, b) => a.score - b.score)
+      .slice(0, 3);
+
+    // Generate content for India market advice
+    const scores = result.scores || {};
+    const indiaAdvice = [];
+    
+    if (scores.india_market_fit <= 5) {
+      indiaAdvice.push({
+        title: "City Strategy",
+        detail: "Start with Tier-1 (Delhi, Mumbai, Bangalore) where payment habits are established. Tier-2 requires different pricing and reach (local influencers, WhatsApp communities)."
+      });
+    }
+    
+    if (scores.first_revenue_likelihood <= 5) {
+      indiaAdvice.push({
+        title: "Revenue Unlock",
+        detail: "Indian users expect freemium/free trial. Build a free tier first, monetize power users. Consider subscription at ₹99-299/month for B2C or commission-based for marketplaces."
+      });
+    }
+    
+    if (scores.target_user_fit <= 5) {
+      indiaAdvice.push({
+        title: "Reach Your User",
+        detail: "90% of Indian users access via mobile-first. WhatsApp, YouTube, and vernacular language content outperform English. Consider Bhasha partnerships."
+      });
+    }
+    
+    if (scores.problem_clarity <= 5) {
+      indiaAdvice.push({
+        title: "Problem Validation",
+        detail: "Talk to 10+ users in-market. IndiaStack (Aadhaar, UPI) enables use cases impossible in Western markets — leverage it."
+      });
+    }
+
+    if (indiaAdvice.length === 0) {
+      indiaAdvice.push({
+        title: "India-First Ready",
+        detail: "Your idea has strong India market fundamentals. Focus on execution and go-to-market — localization of UI/pricing can wait until you have traction."
+      });
+    }
+
+    // Generate achievements
+    const badges = [];
+    if (userStats.totalAnalyses >= 1) badges.push({ icon: '🔍', name: 'First Verdict' });
+    if (userStats.totalAnalyses >= 5) badges.push({ icon: '🔥', name: 'Idea Explorer' });
+    if (userStats.thisWeek >= 3) badges.push({ icon: '⚡', name: 'Speed Tester' });
+    if (result.verdict === 'Build It') badges.push({ icon: '✅', name: 'Build Ready' });
+    if (result.verdict === 'Sleeper Hit') badges.push({ icon: '💡', name: 'Hidden Gem' });
+    if (item.total_score >= 55) badges.push({ icon: '🚀', name: 'Star Founder' });
 
     const container = document.createElement('div');
     container.innerHTML = `
@@ -98,6 +153,58 @@ export default function Results() {
               </tr>
             `).join('')}
           </tbody>
+        </table>
+
+        <!-- RISK HEATMAP SECTION -->
+        <h3 style="font-size: 18px; font-weight: bold; color: #0f172a; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">🚨 Risk Heatmap: Your Weakness Areas</h3>
+        <div style="margin-bottom: 30px;">
+          ${weaknesses.map(weakness => `
+            <div style="margin-bottom: 12px; padding: 12px; background: #fee2e2; border-left: 4px solid #dc2626; border-radius: 4px;">
+              <div style="font-weight: bold; color: #b91c1c; margin-bottom: 6px;">${weakness.label} — ${weakness.score}/10</div>
+              <div style="font-size: 12px; color: #991b1b; font-style: italic;">
+                ${weakness.score <= 3 ? '⛔ CRITICAL — Fix this immediately' : weakness.score <= 6 ? '⚠️ MODERATE — Will impact your verdict' : '⚠ LOW — Nice to optimize'}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+
+        <!-- INDIA MARKET DEEP DIVE SECTION -->
+        <h3 style="font-size: 18px; font-weight: bold; color: #0f172a; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">🇮🇳 India Market Strategy</h3>
+        <div style="margin-bottom: 30px;">
+          ${indiaAdvice.map(advice => `
+            <div style="margin-bottom: 12px; padding: 12px; background: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 4px;">
+              <div style="font-weight: bold; color: #b45309; margin-bottom: 6px;">${advice.title}</div>
+              <div style="font-size: 12px; color: #78350f; line-height: 1.5;">${advice.detail}</div>
+            </div>
+          `).join('')}
+        </div>
+
+        <!-- ACHIEVEMENTS SECTION -->
+        ${badges.length > 0 ? `
+          <h3 style="font-size: 18px; font-weight: bold; color: #0f172a; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">🏆 Your Achievements</h3>
+          <div style="margin-bottom: 30px;">
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+              ${badges.map(badge => `
+                <div style="padding: 10px; text-align: center; background: #fef3c7; border-radius: 6px; border: 1px solid #fcd34d;">
+                  <div style="font-size: 24px; margin-bottom: 4px;">${badge.icon}</div>
+                  <div style="font-size: 11px; font-weight: bold; color: #78350f;">${badge.name}</div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        ` : ''}
+
+        <!-- PERSONAL STATS -->
+        <h3 style="font-size: 16px; font-weight: bold; color: #0f172a; margin-bottom: 12px; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px;">📊 Your Stats</h3>
+        <table style="width: 100%; margin-bottom: 30px; border-collapse: collapse;">
+          <tr style="background: #dbeafe; border: 1px solid #bfdbfe;">
+            <td style="padding: 8px; color: #1e40af; font-weight: bold;">Total Ideas Analyzed</td>
+            <td style="padding: 8px; text-align: right; color: #1e40af; font-weight: bold;">${userStats.totalAnalyses}</td>
+          </tr>
+          <tr style="background: #f0f9ff; border: 1px solid #e0f2fe;">
+            <td style="padding: 8px; color: #0c4a6e;">This Week</td>
+            <td style="padding: 8px; text-align: right; color: #0c4a6e;">${userStats.thisWeek}</td>
+          </tr>
         </table>
 
         ${item.result.why_this_will_fail && item.result.why_this_will_fail.length > 0 ? `
@@ -137,6 +244,11 @@ export default function Results() {
             ).join('')}
           </ol>
         ` : ''}
+
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #e2e8f0; font-size: 12px; color: #64748b; text-align: center;">
+          <p>Generated by IdeaVerdict • Honest AI-powered startup idea evaluation</p>
+          <p>${new Date().toLocaleDateString('en-IN')}</p>
+        </div>
       </div>
     `;
 
