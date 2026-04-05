@@ -404,7 +404,7 @@ Needs External Funding: ${formData.needs_funding}`;
                     <Zap size={20} className="text-cyan-400" />
                     <div>
                       <p className="font-semibold text-white dark:text-slate-900 transition-colors">Quick Mode</p>
-                      <p className="text-xs text-slate-400 dark:text-slate-600 transition-colors">3 questions • 60 seconds</p>
+                      <p className="text-xs text-slate-400 dark:text-slate-600 transition-colors">2 questions • 60 seconds</p>
                     </div>
                   </div>
                   <button
@@ -460,7 +460,7 @@ Needs External Funding: ${formData.needs_funding}`;
                   {quickMode ? "Rapid Fire Evaluation" : "Your Idea"}
                 </h3>
                 <p className="text-base text-slate-400 dark:text-slate-600 transition-colors">
-                  {quickMode ? "Answer 3 quick questions and get an instant verdict" : "Tell us what you're building"}
+                  {quickMode ? "Answer 2 quick questions and get an instant verdict" : "Tell us what you're building"}
                 </p>
               </div>
               {/* SECTION 1: Your Idea */}
