@@ -92,14 +92,14 @@ function NavBar() {
         </Link>
         <div className="flex items-center gap-4">
           <Link
-            to="/auth"
+            to="/dashboard"
             className="text-sm font-medium text-slate-400 dark:text-slate-600 hover:text-slate-200 dark:hover:text-slate-900 transition-colors"
           >
             Sign in
           </Link>
           <SwitchMode />
           <Link
-            to="/auth"
+            to="/dashboard"
             className="text-sm font-semibold px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white transition-all hover:shadow-lg hover:shadow-cyan-500/30 dark:from-cyan-600 dark:to-blue-700"
           >
             Get Started
@@ -139,7 +139,7 @@ function Hero() {
       </p>
 
       <Link
-        to="/auth"
+        to="/dashboard"
         className="inline-flex items-center gap-2 px-7 py-4 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold transition-all hover:shadow-lg hover:shadow-cyan-500/30"
       >
         Stress-Test My Idea <ArrowRight size={17} />
@@ -296,7 +296,7 @@ function CTAStrip() {
           Free to use. No pitch decks. No jargon. Just the truth.
         </p>
         <Link
-          to="/auth"
+          to="/dashboard"
           className="inline-flex items-center gap-2 px-8 py-4 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold transition-all hover:shadow-lg hover:shadow-cyan-500/30 dark:shadow-cyan-500/20"
         >
           Stress-Test My Idea <ArrowRight size={17} />
